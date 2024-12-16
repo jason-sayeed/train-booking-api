@@ -39,6 +39,8 @@
     "typescript-eslint": "^8.18.0"
   },
   "dependencies": {
-    "express": "^4.21.2"
+    "@types/mongoose": "^5.11.96",
+    "express": "^4.21.2",
+    "mongoose": "^8.9.0"
   }
 }
