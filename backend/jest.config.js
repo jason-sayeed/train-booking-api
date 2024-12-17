@@ -3,6 +3,7 @@ module.exports = {
   preset: 'ts-jest',
   // Set the test environment to Node.js
   testEnvironment: 'node',
+  setupFiles: ['dotenv/config'],
 
   // Define the root directory for tests and modules
   roots: ['<rootDir>/tests'],
