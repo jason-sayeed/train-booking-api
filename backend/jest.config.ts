@@ -1,4 +1,11 @@
-module.exports = {
+import * as dotenv from 'dotenv';
+
+// Load the correct .env file depending on the environment
+const envFile: '.env.test' | '.env' =
+  process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
+dotenv.config({ path: envFile });
+
+export default {
   // Use ts-jest preset for testing TypeScript files with Jest
   preset: 'ts-jest',
   // Set the test environment to Node.js
