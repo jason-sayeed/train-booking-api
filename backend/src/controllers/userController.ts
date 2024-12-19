@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express';
 import User from '../models/userModel';
 import { hashPassword } from '../utils/hashPassword';
 import { handleError } from '../utils/handleError';
@@ -9,10 +9,10 @@ import {
 
 const MONGO_DUPLICATE_KEY_ERROR = 11000;
 
-export const createUser = async (
-  req: Request,
-  res: Response,
-): Promise<Response> => {
+export const createUser: RequestHandler = async (
+  req,
+  res,
+) => {
   try {
     const { name, email, password } = req.body;
 
@@ -42,10 +42,7 @@ export const createUser = async (
   }
 };
 
-export const getUser = async (
-  req: Request,
-  res: Response,
-): Promise<Response> => {
+export const getUser: RequestHandler = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -57,10 +54,10 @@ export const getUser = async (
   }
 };
 
-export const updateUser = async (
-  req: Request,
-  res: Response,
-): Promise<Response> => {
+export const updateUser: RequestHandler = async (
+  req,
+  res,
+) => {
   try {
     if (req.body.password) {
       req.body.password = await hashPassword(
@@ -81,10 +78,10 @@ export const updateUser = async (
   }
 };
 
-export const deleteUser = async (
-  req: Request,
-  res: Response,
-): Promise<Response> => {
+export const deleteUser: RequestHandler = async (
+  req,
+  res,
+) => {
   try {
     const deletedUser = await User.findByIdAndDelete(
       req.params.id,
@@ -100,10 +97,10 @@ export const deleteUser = async (
   }
 };
 
-export const getAllUsers = async (
-  _req: Request,
-  res: Response,
-): Promise<Response> => {
+export const getAllUsers: RequestHandler = async (
+  _req,
+  res,
+) => {
   try {
     const users = await User.find();
     return sendSuccess(res, users);

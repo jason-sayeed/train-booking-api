@@ -4,9 +4,10 @@ import { sendError } from './responseHelper';
 export const handleError = (
   res: Response,
   error: unknown,
-): Response => {
+): void => {
   if (error instanceof Error) {
-    return sendError(res, error.message, 400);
+    sendError(res, error.message, 400);
+    return;
   }
-  return sendError(res, 'An unknown error occurred', 400);
+  sendError(res, 'An unknown error occurred', 400);
 };
