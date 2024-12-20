@@ -110,7 +110,7 @@
   "exclude": ["node_modules", "dist", "coverage"],
   "include": [
     "src",
-    "index.ts",
+    "src/index.ts",
     "env.d.ts"
   ]
 }
