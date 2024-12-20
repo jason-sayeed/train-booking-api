@@ -7,8 +7,6 @@ import {
   sendSuccess,
 } from '../utils/responseHelper';
 
-const MONGO_DUPLICATE_KEY_ERROR = 11000;
-
 export const createUser: RequestHandler = async (
   req,
   res,
@@ -23,7 +21,14 @@ export const createUser: RequestHandler = async (
         400,
       );
     }
-    const hashedPassword = await hashPassword(password);
+
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      return sendError(res, 'Email already exists', 400);
+    }
+
+    const hashedPassword: string =
+      await hashPassword(password);
     const savedUser = await User.create({
       name,
       email,
@@ -31,13 +36,6 @@ export const createUser: RequestHandler = async (
     });
     return sendSuccess(res, savedUser, 201);
   } catch (error: unknown) {
-    const err = error as {
-      code?: number;
-      message?: string;
-    };
-    if (err.code === MONGO_DUPLICATE_KEY_ERROR) {
-      return sendError(res, 'Email already exists', 400);
-    }
     return handleError(res, error);
   }
 };

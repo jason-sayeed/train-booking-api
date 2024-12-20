@@ -12,40 +12,32 @@ import {
   sendError,
   sendSuccess,
 } from '../../src/utils/responseHelper';
+import {
+  createRequest,
+  createResponse,
+} from 'node-mocks-http';
 
 jest.mock('../../src/models/userModel');
 jest.mock('../../src/utils/hashPassword');
 jest.mock('../../src/utils/responseHelper');
 
+let req: Request;
+let res: Response;
+let next: jest.Mock;
+
+beforeEach(() => {
+  req = createRequest();
+  res = createResponse();
+  next = jest.fn();
+
+  jest.clearAllMocks();
+});
+
 describe('User Controller', () => {
-  let req: Pick<Request, 'params' | 'body'>;
-  let res: Partial<Response>;
-  let next: jest.Mock;
-
-  beforeEach(() => {
-    jest.clearAllMocks();
-
-    req = {
-      params: {},
-      body: {},
-    };
-
-    res = {
-      status: jest.fn().mockReturnThis(),
-      json: jest.fn().mockReturnThis(),
-    };
-
-    next = jest.fn();
-  });
-
   describe('createUser', () => {
     it('should return an error if required fields are missing', async () => {
       req.body = { email: 'test@example.com' };
-      await createUser(
-        req as Request,
-        res as Response,
-        next,
-      );
+      await createUser(req, res, next);
       expect(sendError).toHaveBeenCalledWith(
         res,
         'Name, email, and password are required',
@@ -60,25 +52,16 @@ describe('User Controller', () => {
         password: 'password123',
       };
 
+      const mockUser = { _id: 'userId123', ...req.body };
+
       (hashPassword as jest.Mock).mockResolvedValue(
         'hashedPassword',
       );
-
-      const mockUser = {
-        _id: 'userId123',
-        name: 'John Doe',
-        email: 'test@example.com',
-        password: 'hashedPassword',
-      };
       (User.create as jest.Mock).mockResolvedValue(
         mockUser,
       );
 
-      await createUser(
-        req as Request,
-        res as Response,
-        next,
-      );
+      await createUser(req, res, next);
 
       expect(hashPassword).toHaveBeenCalledWith(
         'password123',
@@ -102,16 +85,11 @@ describe('User Controller', () => {
         password: 'password123',
       };
 
-      const duplicateError = { code: 11000 };
-      (User.create as jest.Mock).mockRejectedValue(
-        duplicateError,
-      );
+      (User.create as jest.Mock).mockRejectedValue({
+        code: 11000,
+      });
 
-      await createUser(
-        req as Request,
-        res as Response,
-        next,
-      );
+      await createUser(req, res, next);
 
       expect(sendError).toHaveBeenCalledWith(
         res,
@@ -128,11 +106,12 @@ describe('User Controller', () => {
         id: 'userId123',
         name: 'John Doe',
       };
+
       (User.findById as jest.Mock).mockResolvedValue(
         mockUser,
       );
 
-      await getUser(req as Request, res as Response, next);
+      await getUser(req, res, next);
 
       expect(User.findById).toHaveBeenCalledWith(
         'userId123',
@@ -147,7 +126,7 @@ describe('User Controller', () => {
       req.params.id = 'userId123';
       (User.findById as jest.Mock).mockResolvedValue(null);
 
-      await getUser(req as Request, res as Response, next);
+      await getUser(req, res, next);
 
       expect(sendError).toHaveBeenCalledWith(
         res,
@@ -168,16 +147,16 @@ describe('User Controller', () => {
         User.findByIdAndUpdate as jest.Mock
       ).mockResolvedValue({});
 
-      await updateUser(
-        req as Request,
-        res as Response,
-        next,
-      );
+      await updateUser(req, res, next);
 
       expect(hashPassword).toHaveBeenCalledWith(
         'new-password',
       );
-      expect(User.findByIdAndUpdate).toHaveBeenCalled();
+      expect(User.findByIdAndUpdate).toHaveBeenCalledWith(
+        'userId123',
+        { password: 'hashedPassword' },
+        { new: true, runValidators: true },
+      );
       expect(sendSuccess).toHaveBeenCalled();
     });
 
@@ -187,11 +166,7 @@ describe('User Controller', () => {
         User.findByIdAndUpdate as jest.Mock
       ).mockResolvedValue(null);
 
-      await updateUser(
-        req as Request,
-        res as Response,
-        next,
-      );
+      await updateUser(req, res, next);
 
       expect(sendError).toHaveBeenCalledWith(
         res,
@@ -208,11 +183,7 @@ describe('User Controller', () => {
         User.findByIdAndDelete as jest.Mock
       ).mockResolvedValue({});
 
-      await deleteUser(
-        req as Request,
-        res as Response,
-        next,
-      );
+      await deleteUser(req, res, next);
 
       expect(User.findByIdAndDelete).toHaveBeenCalledWith(
         'userId123',
@@ -228,11 +199,7 @@ describe('User Controller', () => {
         User.findByIdAndDelete as jest.Mock
       ).mockResolvedValue(null);
 
-      await deleteUser(
-        req as Request,
-        res as Response,
-        next,
-      );
+      await deleteUser(req, res, next);
 
       expect(sendError).toHaveBeenCalledWith(
         res,
@@ -250,11 +217,7 @@ describe('User Controller', () => {
       ];
       (User.find as jest.Mock).mockResolvedValue(mockUsers);
 
-      await getAllUsers(
-        req as Request,
-        res as Response,
-        next,
-      );
+      await getAllUsers(req, res, next);
 
       expect(User.find).toHaveBeenCalled();
       expect(sendSuccess).toHaveBeenCalledWith(
