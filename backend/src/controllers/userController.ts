@@ -44,7 +44,7 @@ export const getUser: RequestHandler = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
-      return sendError(res, 'User not found', 400);
+      return sendError(res, 'User not found', 404);
     }
     return sendSuccess(res, user);
   } catch (error: unknown) {
