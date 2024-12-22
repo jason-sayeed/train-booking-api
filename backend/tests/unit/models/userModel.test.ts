@@ -1,5 +1,5 @@
-import User from '../../src/models/userModel';
-import '../mongodb_helper';
+import User from '../../../src/models/userModel';
+import '../../mongodb_helper';
 
 describe('User Model', () => {
   beforeEach(async () => {

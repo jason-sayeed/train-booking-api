@@ -1,7 +1,7 @@
 import {
   sendSuccess,
   sendError,
-} from '../../src/utils/responseHelper';
+} from '../../../src/utils/responseHelper';
 import { Response } from 'express';
 
 describe('responseHelper', () => {

@@ -5,21 +5,21 @@ import {
   updateUser,
   deleteUser,
   getAllUsers,
-} from '../../src/controllers/userController';
-import User from '../../src/models/userModel';
-import { hashPassword } from '../../src/utils/hashPassword';
+} from '../../../src/controllers/userController';
+import User from '../../../src/models/userModel';
+import { hashPassword } from '../../../src/utils/hashPassword';
 import {
   sendError,
   sendSuccess,
-} from '../../src/utils/responseHelper';
+} from '../../../src/utils/responseHelper';
 import {
   createRequest,
   createResponse,
 } from 'node-mocks-http';
 
-jest.mock('../../src/models/userModel');
-jest.mock('../../src/utils/hashPassword');
-jest.mock('../../src/utils/responseHelper');
+jest.mock('../../../src/models/userModel');
+jest.mock('../../../src/utils/hashPassword');
+jest.mock('../../../src/utils/responseHelper');
 
 let req: Request;
 let res: Response;
@@ -137,7 +137,7 @@ describe('User Controller', () => {
       expect(sendError).toHaveBeenCalledWith(
         res,
         'User not found',
-        400,
+        404,
       );
     });
   });

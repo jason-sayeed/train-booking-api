@@ -11,7 +11,7 @@ export const sendSuccess = (
 export const sendError = (
   res: Response,
   message: string,
-  statusCode = 400,
+  statusCode: number = 400,
 ): void => {
   res.status(statusCode).json({ error: message });
 };

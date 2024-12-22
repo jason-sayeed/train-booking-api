@@ -1,8 +1,8 @@
 import { Response } from 'express';
-import { handleError } from '../../src/utils/handleError';
-import { sendError } from '../../src/utils/responseHelper';
+import { handleError } from '../../../src/utils/handleError';
+import { sendError } from '../../../src/utils/responseHelper';
 
-jest.mock('../../src/utils/responseHelper', () => ({
+jest.mock('../../../src/utils/responseHelper', () => ({
   sendError: jest.fn(),
 }));
 

@@ -1,4 +1,4 @@
-import { hashPassword } from '../../src/utils/hashPassword';
+import { hashPassword } from '../../../src/utils/hashPassword';
 import * as bcrypt from 'bcrypt';
 
 jest.mock('bcrypt');

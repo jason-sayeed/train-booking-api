@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { connectToDatabase } from '../../src/db/db';
+import { connectToDatabase } from '../../../src/db/db';
 
 jest.mock('mongoose', () => ({
   connect: jest.fn(),
