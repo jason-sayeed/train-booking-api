@@ -85,12 +85,18 @@ describe('User Controller', () => {
         password: 'password123',
       };
 
-      (User.create as jest.Mock).mockRejectedValue({
-        code: 11000,
+      (User.findOne as jest.Mock).mockResolvedValue({
+        _id: 'userId123',
+        name: 'John Doe',
+        email: 'test@example.com',
+        password: 'hashedPassword',
       });
 
       await createUser(req, res, next);
 
+      expect(User.findOne).toHaveBeenCalledWith({
+        email: 'test@example.com',
+      });
       expect(sendError).toHaveBeenCalledWith(
         res,
         'Email already exists',
