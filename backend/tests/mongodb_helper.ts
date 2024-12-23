@@ -7,6 +7,6 @@ beforeAll(async () => {
 });
 
 afterAll(async () => {
-  await mongoStore.close();
   await mongoose.connection.close();
+  await mongoStore.close();
 });
