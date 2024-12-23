@@ -6,6 +6,7 @@ import express, {
 } from 'express';
 import userRoutes from './routes/userRoutes';
 import authRoutes from './routes/authRoutes';
+import trainRoutes from './routes/trainRoutes';
 import passport from './config/passport-config';
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
@@ -50,6 +51,7 @@ app.use(passport.session());
 
 app.use('/users', userRoutes);
 app.use('/auth', authRoutes);
+app.use('/trains', trainRoutes);
 
 app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: 'Not Found' });
