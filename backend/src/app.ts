@@ -25,6 +25,12 @@ if (!process.env.SESSION_SECRET) {
   );
 }
 
+const mongoStore: MongoStore = new MongoStore({
+  mongoUrl: process.env.MONGODB_URL as string,
+  ttl: 2 * 24 * 60 * 60,
+  autoRemove: 'native',
+});
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -35,11 +41,7 @@ app.use(
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
     },
-    store: new MongoStore({
-      mongoUrl: process.env.MONGODB_URL as string,
-      ttl: 2 * 24 * 60 * 60,
-      autoRemove: 'native',
-    }),
+    store: mongoStore,
   }),
 );
 
@@ -60,7 +62,7 @@ app.use(
     res: Response,
     _next: NextFunction,
   ) => {
-    const status = err.status || 500;
+    const status: number = err.status || 500;
     console.error('Error:', err.message);
     const message: string =
       process.env.NODE_ENV === 'development'
@@ -70,4 +72,4 @@ app.use(
   },
 );
 
-export default app;
+export { app, mongoStore };
