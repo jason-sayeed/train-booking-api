@@ -6,31 +6,44 @@ import mongoose, {
 
 interface ITrain extends Document {
   name: string;
-  capacity: number;
-  routes: Schema.Types.ObjectId[];
+  route: Schema.Types.ObjectId;
+  departureTime: Date;
+  arrivalTime: Date;
+  availableSeats: number;
+  availableDates: Date[];
 }
 
 const trainSchema: Schema = new Schema({
   name: {
     type: String,
-    required: [true, 'Train name is required'],
-    unique: true,
+    required: true,
     trim: true,
   },
-  capacity: {
+  route: {
+    type: Schema.Types.ObjectId,
+    ref: 'Route',
+    required: true,
+  },
+  departureTime: {
+    type: Date,
+    required: true,
+  },
+  arrivalTime: {
+    type: Date,
+    required: true,
+  },
+  availableSeats: {
     type: Number,
-    required: [true, 'Train capacity is required'],
+    required: true,
     min: [
       1,
       'There must be at least one seat on the train',
     ],
   },
-  routes: [
-    {
-      type: Schema.Types.ObjectId,
-      ref: 'Route',
-    },
-  ],
+  availableDates: {
+    type: [Date],
+    required: true,
+  },
 });
 
 const Train: Model<ITrain> = mongoose.model<ITrain>(
