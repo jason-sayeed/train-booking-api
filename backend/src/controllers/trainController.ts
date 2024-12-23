@@ -1,100 +1,66 @@
 import { RequestHandler } from 'express';
 import Train from '../models/trainModel';
-import { handleError } from '../utils/handleError';
+import Route from '../models/routesModel';
 import {
   sendError,
   sendSuccess,
 } from '../utils/responseHelper';
 
-export const createTrain: RequestHandler = async (
+export const searchTrains: RequestHandler = async (
   req,
   res,
 ): Promise<void> => {
   try {
-    const { name, route, capacity, schedule } = req.body;
+    const { startStation, endStation, date } = req.query;
 
-    if (!name || !route || !capacity || !schedule) {
+    if (!startStation || !endStation || !date) {
       return sendError(
         res,
-        'Name, route, capacity, and schedule are required',
+        'Route and date are required',
         400,
       );
     }
 
-    const newTrain = await Train.create({
-      name,
-      route,
-      capacity,
-      schedule,
+    const searchDate = date as string;
+
+    // Find the route object for the provided startStation and endStation
+    const route = await Route.findOne({
+      startStation,
+      endStation,
     });
 
-    return sendSuccess(res, newTrain, 201);
-  } catch (error: unknown) {
-    return handleError(res, error);
-  }
-};
-
-export const getTrain: RequestHandler = async (
-  req,
-  res,
-): Promise<void> => {
-  try {
-    const train = await Train.findById(req.params.id);
-    if (!train) {
-      return sendError(res, 'Train not found', 404);
+    if (!route) {
+      return sendError(res, 'Route not found', 404);
     }
-    return sendSuccess(res, train);
-  } catch (error: unknown) {
-    return handleError(res, error);
-  }
-};
 
-export const updateTrain: RequestHandler = async (
-  req,
-  res,
-): Promise<void> => {
-  try {
-    const updatedTrain = await Train.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true },
-    );
-    if (!updatedTrain) {
-      return sendError(res, 'Train not found', 404);
-    }
-    return sendSuccess(res, updatedTrain);
-  } catch (error: unknown) {
-    return handleError(res, error);
-  }
-};
-
-export const deleteTrain: RequestHandler = async (
-  req,
-  res,
-): Promise<void> => {
-  try {
-    const deletedTrain = await Train.findByIdAndDelete(
-      req.params.id,
-    );
-    if (!deletedTrain) {
-      return sendError(res, 'Train not found', 404);
-    }
-    return sendSuccess(res, {
-      message: 'Train successfully deleted',
+    const trains = await Train.find({
+      route: route._id, // Match the route by ObjectId
+      availableDates: {
+        $in: [searchDate], // Check if the train operates on this date
+      },
     });
-  } catch (error: unknown) {
-    return handleError(res, error);
-  }
-};
 
-export const getAllTrains: RequestHandler = async (
-  _req,
-  res,
-): Promise<void> => {
-  try {
-    const trains = await Train.find();
-    return sendSuccess(res, trains);
+    if (trains.length === 0) {
+      return sendError(
+        res,
+        'No trains found for the specified route and date',
+        404,
+      );
+    }
+
+    // Return relevant train data: departure time, arrival time, available seats
+    const result = trains.map((train) => ({
+      departureTime: train.departureTime,
+      arrivalTime: train.arrivalTime,
+      availableSeats: train.availableSeats,
+    }));
+
+    return sendSuccess(res, result);
   } catch (error: unknown) {
-    return handleError(res, error);
+    return sendError(
+      res,
+      'Error searching for trains',
+      500,
+    );
   }
 };

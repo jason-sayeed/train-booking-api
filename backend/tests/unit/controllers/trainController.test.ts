@@ -1,12 +1,7 @@
 import { Request, Response } from 'express';
-import {
-  createTrain,
-  getTrain,
-  updateTrain,
-  deleteTrain,
-  getAllTrains,
-} from '../../../src/controllers/trainController';
+import { searchTrains } from '../../../src/controllers/trainController';
 import Train from '../../../src/models/trainModel';
+import Route from '../../../src/models/routesModel';
 import {
   sendError,
   sendSuccess,
@@ -17,6 +12,7 @@ import {
 } from 'node-mocks-http';
 
 jest.mock('../../../src/models/trainModel');
+jest.mock('../../../src/models/routesModel');
 jest.mock('../../../src/utils/responseHelper');
 
 let req: Request;
@@ -32,171 +28,105 @@ beforeEach(() => {
 });
 
 describe('Train Controller', () => {
-  describe('createTrain', () => {
-    it('should return an error if required fields are missing', async (): Promise<void> => {
-      req.body = { name: 'Express' };
-      await createTrain(req, res, next);
+  describe('searchTrains', () => {
+    it('should return an error if route or date is missing', async (): Promise<void> => {
+      req.query = { startStation: 'Station A' };
+
+      await searchTrains(req, res, next);
+
       expect(sendError).toHaveBeenCalledWith(
         res,
-        'Name, route, capacity, and schedule are required',
+        'Route and date are required',
         400,
       );
     });
 
-    it('should create a train', async (): Promise<void> => {
-      req.body = {
-        name: 'Express',
-        route: 'A to B',
-        capacity: 300,
-        schedule: '10:00 AM',
+    it('should return an error if no trains are found for the specified route and date', async (): Promise<void> => {
+      req.query = {
+        startStation: 'Station A',
+        endStation: 'Station B',
+        date: '2024-12-25',
       };
 
-      const mockTrain = { _id: 'trainId123', ...req.body };
+      (Train.find as jest.Mock).mockResolvedValue([]);
 
-      (Train.create as jest.Mock).mockResolvedValue(
-        mockTrain,
-      );
-
-      await createTrain(req, res, next);
-
-      expect(Train.create).toHaveBeenCalledWith(req.body);
-      expect(sendSuccess).toHaveBeenCalledWith(
-        res,
-        mockTrain,
-        201,
-      );
-    });
-  });
-
-  describe('getTrain', () => {
-    it('should return a train by ID', async () => {
-      req.params.id = 'trainId123';
-      const mockTrain = {
-        id: 'trainId123',
-        name: 'Express',
-        route: 'A to B',
-      };
-
-      (Train.findById as jest.Mock).mockResolvedValue(
-        mockTrain,
-      );
-
-      await getTrain(req, res, next);
-
-      expect(Train.findById).toHaveBeenCalledWith(
-        'trainId123',
-      );
-      expect(sendSuccess).toHaveBeenCalledWith(
-        res,
-        mockTrain,
-      );
-    });
-
-    it('should return an error if train is not found', async (): Promise<void> => {
-      req.params.id = 'trainId123';
-      (Train.findById as jest.Mock).mockResolvedValue(null);
-
-      await getTrain(req, res, next);
+      await searchTrains(req, res, next);
 
       expect(sendError).toHaveBeenCalledWith(
         res,
-        'Train not found',
+        'Route not found',
         404,
       );
     });
-  });
 
-  describe('updateTrain', () => {
-    it('should update a train', async (): Promise<void> => {
-      req.params.id = 'trainId123';
-      req.body = { name: 'Super Express' };
-      const mockTrain = {
-        _id: 'trainId123',
-        name: 'Super Express',
+    it('should return trains if found for the specified route and date', async (): Promise<void> => {
+      req.query = {
+        startStation: 'Station A',
+        endStation: 'Station B',
+        date: '2024-12-25',
       };
 
-      (
-        Train.findByIdAndUpdate as jest.Mock
-      ).mockResolvedValue(mockTrain);
+      const mockRoute = {
+        _id: 'route1',
+        startStation: 'Station A',
+        endStation: 'Station B',
+      };
 
-      await updateTrain(req, res, next);
-
-      expect(Train.findByIdAndUpdate).toHaveBeenCalledWith(
-        'trainId123',
-        req.body,
-        { new: true, runValidators: true },
-      );
-      expect(sendSuccess).toHaveBeenCalledWith(
-        res,
-        mockTrain,
-      );
-    });
-
-    it('should return an error if train is not found', async (): Promise<void> => {
-      req.params.id = 'trainId123';
-      (
-        Train.findByIdAndUpdate as jest.Mock
-      ).mockResolvedValue(null);
-
-      await updateTrain(req, res, next);
-
-      expect(sendError).toHaveBeenCalledWith(
-        res,
-        'Train not found',
-        404,
-      );
-    });
-  });
-
-  describe('deleteTrain', () => {
-    it('should delete a train by ID', async (): Promise<void> => {
-      req.params.id = 'trainId123';
-      (
-        Train.findByIdAndDelete as jest.Mock
-      ).mockResolvedValue({});
-
-      await deleteTrain(req, res, next);
-
-      expect(Train.findByIdAndDelete).toHaveBeenCalledWith(
-        'trainId123',
-      );
-      expect(sendSuccess).toHaveBeenCalledWith(res, {
-        message: 'Train successfully deleted',
-      });
-    });
-
-    it('should return an error if train is not found', async (): Promise<void> => {
-      req.params.id = 'trainId123';
-      (
-        Train.findByIdAndDelete as jest.Mock
-      ).mockResolvedValue(null);
-
-      await deleteTrain(req, res, next);
-
-      expect(sendError).toHaveBeenCalledWith(
-        res,
-        'Train not found',
-        404,
-      );
-    });
-  });
-
-  describe('getAllTrains', () => {
-    it('should return all trains', async (): Promise<void> => {
       const mockTrains = [
-        { name: 'Express', route: 'A to B' },
-        { name: 'Super Express', route: 'B to C' },
+        {
+          _id: 'train1',
+          route: mockRoute._id,
+          departureTime: new Date('2024-12-25T08:00:00Z'),
+          arrivalTime: new Date('2024-12-25T10:00:00Z'),
+          availableSeats: 100,
+          availableDates: [new Date('2024-12-25')],
+        },
+        {
+          _id: 'train2',
+          route: mockRoute._id,
+          departureTime: new Date('2024-12-25T12:00:00Z'),
+          arrivalTime: new Date('2024-12-25T14:00:00Z'),
+          availableSeats: 80,
+          availableDates: [new Date('2024-12-25')],
+        },
       ];
+
+      (Route.findOne as jest.Mock).mockResolvedValue(
+        mockRoute,
+      );
       (Train.find as jest.Mock).mockResolvedValue(
         mockTrains,
       );
 
-      await getAllTrains(req, res, next);
+      await searchTrains(req, res, next);
 
-      expect(Train.find).toHaveBeenCalled();
       expect(sendSuccess).toHaveBeenCalledWith(
         res,
-        mockTrains,
+        mockTrains.map((train) => ({
+          departureTime: train.departureTime,
+          arrivalTime: train.arrivalTime,
+          availableSeats: train.availableSeats,
+        })),
+      );
+    });
+
+    it('should handle unexpected errors', async (): Promise<void> => {
+      req.query = {
+        startStation: 'Station A',
+        endStation: 'Station B',
+        date: '2024-12-25',
+      };
+
+      (Train.find as jest.Mock).mockRejectedValue(
+        new Error('Database error'),
+      );
+
+      await searchTrains(req, res, next);
+
+      expect(sendError).toHaveBeenCalledWith(
+        res,
+        'Error searching for trains',
+        500,
       );
     });
   });
