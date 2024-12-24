@@ -10,7 +10,7 @@ import {
 export const createUser: RequestHandler = async (
   req,
   res,
-) => {
+): Promise<void> => {
   try {
     const { name, email, password } = req.body;
 
@@ -55,7 +55,7 @@ export const getUser: RequestHandler = async (req, res) => {
 export const updateUser: RequestHandler = async (
   req,
   res,
-) => {
+): Promise<void> => {
   try {
     if (req.body.password) {
       req.body.password = await hashPassword(
@@ -79,7 +79,7 @@ export const updateUser: RequestHandler = async (
 export const deleteUser: RequestHandler = async (
   req,
   res,
-) => {
+): Promise<void> => {
   try {
     const deletedUser = await User.findByIdAndDelete(
       req.params.id,
@@ -98,7 +98,7 @@ export const deleteUser: RequestHandler = async (
 export const getAllUsers: RequestHandler = async (
   _req,
   res,
-) => {
+): Promise<void> => {
   try {
     const users = await User.find();
     return sendSuccess(res, users);

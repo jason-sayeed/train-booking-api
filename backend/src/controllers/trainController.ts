@@ -23,7 +23,6 @@ export const searchTrains: RequestHandler = async (
 
     const searchDate = date as string;
 
-    // Find the route object for the provided startStation and endStation
     const route = await Route.findOne({
       startStation,
       endStation,
@@ -34,9 +33,9 @@ export const searchTrains: RequestHandler = async (
     }
 
     const trains = await Train.find({
-      route: route._id, // Match the route by ObjectId
+      route: route._id,
       availableDates: {
-        $in: [searchDate], // Check if the train operates on this date
+        $in: [searchDate],
       },
     });
 
@@ -48,12 +47,23 @@ export const searchTrains: RequestHandler = async (
       );
     }
 
-    // Return relevant train data: departure time, arrival time, available seats
-    const result = trains.map((train) => ({
-      departureTime: train.departureTime,
-      arrivalTime: train.arrivalTime,
-      availableSeats: train.availableSeats,
-    }));
+    const result: {
+      departureTime: Date;
+      arrivalTime: Date;
+      availableSeats: number;
+    }[] = trains.map(
+      (
+        train,
+      ): {
+        departureTime: Date;
+        arrivalTime: Date;
+        availableSeats: number;
+      } => ({
+        departureTime: train.departureTime,
+        arrivalTime: train.arrivalTime,
+        availableSeats: train.availableSeats,
+      }),
+    );
 
     return sendSuccess(res, result);
   } catch (error: unknown) {

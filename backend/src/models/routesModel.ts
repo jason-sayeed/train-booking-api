@@ -1,4 +1,8 @@
-import mongoose, { Schema, Document } from 'mongoose';
+import mongoose, {
+  Schema,
+  Model,
+  Document,
+} from 'mongoose';
 
 interface IRoute extends Document {
   startStation: string;
@@ -16,7 +20,10 @@ const routeSchema: Schema = new Schema({
   },
 });
 
-const Route = mongoose.model<IRoute>('Route', routeSchema);
+const Route: Model<IRoute> = mongoose.model<IRoute>(
+  'Route',
+  routeSchema,
+);
 
 export default Route;
 export { IRoute };
