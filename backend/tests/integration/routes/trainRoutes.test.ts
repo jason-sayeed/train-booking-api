@@ -21,14 +21,24 @@ describe('Train Routes', () => {
     departureTime: Date;
     arrivalTime: Date;
     availableSeats: number;
-    availableDates: Date[];
+    availableDates: {
+      date: Date;
+      availableSeats: number;
+      seatsBooked: number;
+    }[];
   } = {
     name: 'Train 1',
     route: null,
     departureTime: new Date('2024-12-23T10:00:00Z'),
     arrivalTime: new Date('2024-12-23T12:00:00Z'),
     availableSeats: 100,
-    availableDates: [new Date('2024-12-23')],
+    availableDates: [
+      {
+        date: new Date('2024-12-23'),
+        availableSeats: 100,
+        seatsBooked: 0,
+      },
+    ],
   };
 
   let route: IRoute;
@@ -93,7 +103,14 @@ describe('Train Routes', () => {
     });
 
     it('should return 404 if no trains are available on the specified date', async (): Promise<void> => {
-      train.availableDates = [new Date('2024-12-24')];
+      train.availableDates = [
+        {
+          date: new Date('2024-12-24'),
+          availableSeats: 100,
+          seatsBooked: 0,
+        },
+      ];
+
       await train.save();
 
       const res: Response = await request(app)
