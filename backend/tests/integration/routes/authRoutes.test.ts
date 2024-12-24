@@ -10,7 +10,7 @@ describe('Auth Routes', () => {
     password: 'password123',
   };
 
-  beforeEach(async () => {
+  afterEach(async (): Promise<void> => {
     await User.deleteMany();
   });
 

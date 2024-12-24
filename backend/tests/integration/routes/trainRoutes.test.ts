@@ -35,8 +35,8 @@ describe('Train Routes', () => {
   let train: ITrain;
 
   beforeEach(async (): Promise<void> => {
-    await Train.deleteMany();
-    await Route.deleteMany();
+    await Train.deleteMany({});
+    await Route.deleteMany({});
 
     route = await Route.create(routeData);
 
@@ -44,6 +44,11 @@ describe('Train Routes', () => {
       route._id as mongoose.Schema.Types.ObjectId;
 
     train = await Train.create(trainData);
+  });
+
+  afterEach(async (): Promise<void> => {
+    await Train.deleteMany({});
+    await Route.deleteMany({});
   });
 
   describe('GET /trains/search', () => {

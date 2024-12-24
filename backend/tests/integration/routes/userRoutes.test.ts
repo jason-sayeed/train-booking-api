@@ -10,7 +10,11 @@ describe('User Routes', () => {
     password: 'password123',
   };
 
-  beforeEach(async () => {
+  beforeEach(async (): Promise<void> => {
+    await User.deleteMany();
+  });
+
+  afterEach(async (): Promise<void> => {
     await User.deleteMany();
   });
 

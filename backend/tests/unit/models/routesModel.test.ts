@@ -2,8 +2,12 @@ import Route from '../../../src/models/routesModel';
 import '../../mongodb_helper';
 
 describe('Route Model', () => {
-  beforeEach(async () => {
-    await Route.deleteMany({});
+  beforeEach(async (): Promise<void> => {
+    await Route.deleteMany();
+  });
+
+  afterEach(async (): Promise<void> => {
+    await Route.deleteMany();
   });
 
   it('should create and save a route successfully', async (): Promise<void> => {

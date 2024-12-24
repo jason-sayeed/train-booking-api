@@ -111,6 +111,7 @@
   "include": [
     "src",
     "src/index.ts",
-    "env.d.ts"
+    "env.d.ts",
+    "jest.config.ts"
   ]
 }

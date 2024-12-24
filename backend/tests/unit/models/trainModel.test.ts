@@ -3,7 +3,11 @@ import Train from '../../../src/models/trainModel';
 import '../../mongodb_helper';
 
 describe('Train Model', () => {
-  beforeEach(async () => {
+  beforeEach(async (): Promise<void> => {
+    await Train.deleteMany({});
+  });
+
+  afterEach(async (): Promise<void> => {
     await Train.deleteMany({});
   });
 
