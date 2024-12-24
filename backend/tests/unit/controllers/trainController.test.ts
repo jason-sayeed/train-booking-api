@@ -79,7 +79,13 @@ describe('Train Controller', () => {
           departureTime: new Date('2024-12-25T08:00:00Z'),
           arrivalTime: new Date('2024-12-25T10:00:00Z'),
           availableSeats: 100,
-          availableDates: [new Date('2024-12-25')],
+          availableDates: [
+            {
+              date: '2024-12-25T00:00:00.000Z',
+              availableSeats: 100,
+              seatsBooked: 0,
+            },
+          ],
         },
         {
           _id: 'train2',
@@ -87,7 +93,13 @@ describe('Train Controller', () => {
           departureTime: new Date('2024-12-25T12:00:00Z'),
           arrivalTime: new Date('2024-12-25T14:00:00Z'),
           availableSeats: 80,
-          availableDates: [new Date('2024-12-25')],
+          availableDates: [
+            {
+              date: '2024-12-25T00:00:00.000Z',
+              availableSeats: 80,
+              seatsBooked: 0,
+            },
+          ],
         },
       ];
 

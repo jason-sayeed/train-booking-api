@@ -21,8 +21,6 @@ export const searchTrains: RequestHandler = async (
       );
     }
 
-    const searchDate = date as string;
-
     const route = await Route.findOne({
       startStation,
       endStation,
@@ -34,12 +32,12 @@ export const searchTrains: RequestHandler = async (
 
     const trains = await Train.find({
       route: route._id,
-      availableDates: {
-        $in: [searchDate],
+      'availableDates.date': {
+        $in: date as string,
       },
     });
 
-    if (trains.length === 0) {
+    if (!trains.length) {
       return sendError(
         res,
         'No trains found for the specified route and date',
@@ -47,25 +45,27 @@ export const searchTrains: RequestHandler = async (
       );
     }
 
-    const result: {
-      departureTime: Date;
-      arrivalTime: Date;
-      availableSeats: number;
-    }[] = trains.map(
-      (
-        train,
-      ): {
-        departureTime: Date;
-        arrivalTime: Date;
-        availableSeats: number;
-      } => ({
-        departureTime: train.departureTime,
-        arrivalTime: train.arrivalTime,
-        availableSeats: train.availableSeats,
-      }),
-    );
+    const trainsWithSeats = trains.flatMap((train) => {
+      return train.availableDates
+        .map((dateObj) => ({
+          departureTime: train.departureTime,
+          arrivalTime: train.arrivalTime,
+          availableSeats: dateObj.availableSeats,
+        }))
+        .filter(
+          (dateObj): boolean => dateObj.availableSeats > 0,
+        );
+    });
 
-    return sendSuccess(res, result);
+    if (!trainsWithSeats.length) {
+      return sendError(
+        res,
+        'No trains available for the specified date and route',
+        404,
+      );
+    }
+
+    return sendSuccess(res, trainsWithSeats);
   } catch (error: unknown) {
     return sendError(
       res,
