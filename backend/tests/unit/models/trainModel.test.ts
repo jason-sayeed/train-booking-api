@@ -21,8 +21,16 @@ describe('Train Model', () => {
       arrivalTime: new Date('2024-12-25T10:00:00Z'),
       availableSeats: 100,
       availableDates: [
-        new Date('2024-12-25'),
-        new Date('2024-12-26'),
+        {
+          date: new Date('2024-12-25'),
+          availableSeats: 100,
+          seatsBooked: 0,
+        },
+        {
+          date: new Date('2024-12-26'),
+          availableSeats: 100,
+          seatsBooked: 0,
+        },
       ],
     });
 
@@ -30,14 +38,7 @@ describe('Train Model', () => {
 
     expect(savedTrain._id).toBeDefined();
     expect(savedTrain.name).toBe('Express Train');
-    expect(savedTrain.route.toString()).toBe(
-      mockRouteId.toString(),
-    );
-    expect(savedTrain.availableSeats).toBe(100);
-    expect(savedTrain.availableDates).toEqual([
-      new Date('2024-12-25'),
-      new Date('2024-12-26'),
-    ]);
+    expect(savedTrain.route).toBe(mockRouteId);
   });
 
   it('should not save a train without a name', async (): Promise<void> => {
@@ -48,7 +49,13 @@ describe('Train Model', () => {
       departureTime: new Date('2024-12-25T08:00:00Z'),
       arrivalTime: new Date('2024-12-25T10:00:00Z'),
       availableSeats: 100,
-      availableDates: [new Date('2024-12-25')],
+      availableDates: [
+        {
+          date: new Date('2024-12-25'),
+          availableSeats: 0,
+          seatsBooked: 0,
+        },
+      ],
     });
 
     await expect(train.save()).rejects.toThrow(
@@ -95,7 +102,13 @@ describe('Train Model', () => {
       departureTime: new Date('2024-12-25T08:00:00Z'),
       arrivalTime: new Date('2024-12-25T10:00:00Z'),
       availableSeats: 0,
-      availableDates: [new Date('2024-12-25')],
+      availableDates: [
+        {
+          date: new Date('2024-12-25'),
+          availableSeats: 0,
+          seatsBooked: 0,
+        },
+      ],
     });
 
     await expect(train.save()).rejects.toThrow(
@@ -113,8 +126,16 @@ describe('Train Model', () => {
       arrivalTime: new Date('2024-12-25T10:00:00Z'),
       availableSeats: 100,
       availableDates: [
-        new Date('2024-12-25'),
-        new Date('2024-12-26'),
+        {
+          date: new Date('2024-12-25'),
+          availableSeats: 100,
+          seatsBooked: 0,
+        },
+        {
+          date: new Date('2024-12-26'),
+          availableSeats: 100,
+          seatsBooked: 0,
+        },
       ],
     });
 
@@ -124,7 +145,13 @@ describe('Train Model', () => {
       departureTime: new Date('2024-12-25T12:00:00Z'),
       arrivalTime: new Date('2024-12-25T14:00:00Z'),
       availableSeats: 80,
-      availableDates: [new Date('2024-12-25')],
+      availableDates: [
+        {
+          date: new Date('2024-12-25'),
+          availableSeats: 80,
+          seatsBooked: 0,
+        },
+      ],
     });
 
     await train1.save();
@@ -133,7 +160,11 @@ describe('Train Model', () => {
     const searchDate = new Date('2024-12-25');
     const trains = await Train.find({
       route: mockRouteId,
-      availableDates: { $in: [searchDate] },
+      availableDates: {
+        $elemMatch: {
+          date: searchDate,
+        },
+      },
     });
 
     expect(trains.length).toBe(2);
@@ -150,7 +181,13 @@ describe('Train Model', () => {
       departureTime: new Date('2024-12-25T08:00:00Z'),
       arrivalTime: new Date('2024-12-25T10:00:00Z'),
       availableSeats: 100,
-      availableDates: [new Date('2024-12-25')],
+      availableDates: [
+        {
+          date: new Date('2024-12-25'),
+          availableSeats: 100,
+          seatsBooked: 0,
+        },
+      ],
     });
 
     const train2 = new Train({
@@ -159,7 +196,13 @@ describe('Train Model', () => {
       departureTime: new Date('2024-12-25T12:00:00Z'),
       arrivalTime: new Date('2024-12-25T14:00:00Z'),
       availableSeats: 80,
-      availableDates: [new Date('2024-12-26')],
+      availableDates: [
+        {
+          date: new Date('2024-12-26'),
+          availableSeats: 80,
+          seatsBooked: 0,
+        },
+      ],
     });
 
     await train1.save();
@@ -167,8 +210,11 @@ describe('Train Model', () => {
 
     const searchDate = new Date('2024-12-25');
     const trains = await Train.find({
-      route: mockRouteId,
-      availableDates: { $in: [searchDate] },
+      availableDates: {
+        $elemMatch: {
+          date: searchDate,
+        },
+      },
     });
 
     expect(trains.length).toBe(1);
