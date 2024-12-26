@@ -5,6 +5,7 @@ import mongoose, {
 } from 'mongoose';
 
 interface ITrain extends Document {
+  _id: string;
   name: string;
   route: Schema.Types.ObjectId;
   departureTime: Date;

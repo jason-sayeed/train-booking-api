@@ -5,6 +5,7 @@ import mongoose, {
 } from 'mongoose';
 
 interface IBooking extends Document {
+  _id: string;
   user: Schema.Types.ObjectId;
   train: Schema.Types.ObjectId;
   seatsBooked: number;
