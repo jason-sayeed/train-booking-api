@@ -8,9 +8,9 @@ import {
 
 const router: Router = express.Router();
 
-router.get('/:bookingId', getBookingById);
+router.get('/:id', getBookingById);
 router.post('/', createBooking);
-router.put('/:bookingId', updateBooking);
-router.delete('/:bookingId', deleteBooking);
+router.put('/:id', updateBooking);
+router.delete('/:id', deleteBooking);
 
 export default router;
