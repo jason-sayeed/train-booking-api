@@ -1,12 +1,19 @@
 import mongoose from 'mongoose';
-import { connectToDatabase } from '../src/db/db';
+import { MongoMemoryServer } from 'mongodb-memory-server';
 import { mongoStore } from '../src/app';
 
-beforeAll(async () => {
-  await connectToDatabase();
+let mongoServer: MongoMemoryServer;
+
+beforeAll(async (): Promise<void> => {
+  mongoServer = await MongoMemoryServer.create();
+  const uri: string = mongoServer.getUri();
+
+  await mongoose.connect(uri);
 });
 
-afterAll(async () => {
+afterAll(async (): Promise<void> => {
+  await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
+  await mongoServer.stop();
   await mongoStore.close();
 });
