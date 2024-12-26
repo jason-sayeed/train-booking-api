@@ -115,6 +115,7 @@ describe('Train Controller', () => {
       expect(sendSuccess).toHaveBeenCalledWith(
         res,
         mockTrains.map((train) => ({
+          trainId: train._id.toString(),
           departureTime: train.departureTime,
           arrivalTime: train.arrivalTime,
           availableSeats: train.availableSeats,

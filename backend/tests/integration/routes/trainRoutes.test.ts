@@ -71,6 +71,9 @@ describe('Train Routes', () => {
       expect(res.body[0]).toHaveProperty('departureTime');
       expect(res.body[0]).toHaveProperty('arrivalTime');
       expect(res.body[0]).toHaveProperty('availableSeats');
+      expect(res.body[0].trainId).toBe(
+        train._id.toString(),
+      );
     });
 
     it('should return 400 if required query parameters are missing', async (): Promise<void> => {

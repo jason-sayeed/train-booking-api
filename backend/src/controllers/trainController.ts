@@ -48,6 +48,7 @@ export const searchTrains: RequestHandler = async (
     const trainsWithSeats = trains.flatMap((train) => {
       return train.availableDates
         .map((dateObj) => ({
+          trainId: train._id.toString(),
           departureTime: train.departureTime,
           arrivalTime: train.arrivalTime,
           availableSeats: dateObj.availableSeats,
