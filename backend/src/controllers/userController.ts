@@ -94,15 +94,3 @@ export const deleteUser: RequestHandler = async (
     return handleError(res, error);
   }
 };
-
-export const getAllUsers: RequestHandler = async (
-  _req,
-  res,
-): Promise<void> => {
-  try {
-    const users = await User.find();
-    return sendSuccess(res, users);
-  } catch (error: unknown) {
-    return handleError(res, error);
-  }
-};

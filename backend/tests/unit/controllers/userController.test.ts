@@ -4,7 +4,6 @@ import {
   getUser,
   updateUser,
   deleteUser,
-  getAllUsers,
 } from '../../../src/controllers/userController';
 import User from '../../../src/models/userModel';
 import { hashPassword } from '../../../src/utils/hashPassword';
@@ -211,24 +210,6 @@ describe('User Controller', () => {
         res,
         'User not found',
         404,
-      );
-    });
-  });
-
-  describe('getAllUsers', () => {
-    it('should return all users', async () => {
-      const mockUsers = [
-        { name: 'John Doe' },
-        { name: 'Jane Doe' },
-      ];
-      (User.find as jest.Mock).mockResolvedValue(mockUsers);
-
-      await getAllUsers(req, res, next);
-
-      expect(User.find).toHaveBeenCalled();
-      expect(sendSuccess).toHaveBeenCalledWith(
-        res,
-        mockUsers,
       );
     });
   });

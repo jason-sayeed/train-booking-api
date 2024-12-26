@@ -53,21 +53,6 @@ describe('User Routes', () => {
     });
   });
 
-  describe('GET /users', () => {
-    it('should return all users', async (): Promise<void> => {
-      await User.create(userData);
-      await User.create({
-        ...userData,
-        email: 'janedoe@example.com',
-      });
-
-      const res = await request(app).get('/users');
-
-      expect(res.status).toBe(200);
-      expect(res.body.length).toBe(2);
-    });
-  });
-
   describe('PUT /users/:id', () => {
     it('should update a user and return the updated user', async (): Promise<void> => {
       const user = await User.create(userData);
