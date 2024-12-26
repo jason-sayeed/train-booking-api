@@ -6,10 +6,6 @@ describe('Route Model', () => {
     await Route.deleteMany();
   });
 
-  afterEach(async (): Promise<void> => {
-    await Route.deleteMany();
-  });
-
   it('should create and save a route successfully', async (): Promise<void> => {
     const route = new Route({
       startStation: 'Station A',

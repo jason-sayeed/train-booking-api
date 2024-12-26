@@ -2,11 +2,7 @@ import User from '../../../src/models/userModel';
 import '../../mongodb_helper';
 
 describe('User Model', () => {
-  afterEach(async (): Promise<void> => {
-    await User.deleteMany();
-  });
-
-  afterEach(async (): Promise<void> => {
+  beforeEach(async (): Promise<void> => {
     await User.deleteMany();
   });
 

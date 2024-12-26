@@ -56,11 +56,6 @@ describe('Train Routes', () => {
     train = await Train.create(trainData);
   });
 
-  afterEach(async (): Promise<void> => {
-    await Train.deleteMany({});
-    await Route.deleteMany({});
-  });
-
   describe('GET /trains/search', () => {
     it('should return a list of trains matching the route and date', async (): Promise<void> => {
       const res: Response = await request(app)

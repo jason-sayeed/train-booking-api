@@ -7,10 +7,6 @@ describe('Train Model', () => {
     await Train.deleteMany({});
   });
 
-  afterEach(async (): Promise<void> => {
-    await Train.deleteMany({});
-  });
-
   it('should create and save a train successfully', async (): Promise<void> => {
     const mockRouteId = new mongoose.Types.ObjectId();
 

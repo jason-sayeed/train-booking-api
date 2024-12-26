@@ -14,10 +14,6 @@ describe('User Routes', () => {
     await User.deleteMany();
   });
 
-  afterEach(async (): Promise<void> => {
-    await User.deleteMany();
-  });
-
   describe('POST /users', () => {
     it('should create a new user and return 201', async (): Promise<void> => {
       const res = await request(app)
