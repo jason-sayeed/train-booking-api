@@ -47,7 +47,7 @@ passport.serializeUser(
     done: (err: Error | null, id?: string) => void,
   ) => {
     if (!user._id) {
-      throw new Error('User id is found');
+      throw new Error('User id is not found');
     }
     done(null, user._id);
   },
