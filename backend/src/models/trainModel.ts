@@ -41,7 +41,7 @@ const trainSchema: Schema = new Schema({
   availableSeats: {
     type: Number,
     required: true,
-    min: [1, '`availableSeats` cannot be less than 1'],
+    min: [0, '`availableSeats` cannot be less than 0'],
   },
   seatsBooked: {
     type: Number,
