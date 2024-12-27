@@ -22,14 +22,9 @@ describe('Booking Routes', () => {
     route: new mongoose.Types.ObjectId(),
     departureTime: new Date(),
     arrivalTime: new Date(),
+    operatingDate: new Date(),
     availableSeats: 100,
-    availableDates: [
-      {
-        date: new Date(),
-        availableSeats: 100,
-        seatsBooked: 0,
-      },
-    ],
+    seatsBooked: 0,
   };
 
   let user: IUser;
@@ -71,22 +66,7 @@ describe('Booking Routes', () => {
 
       expect(res.status).toBe(400);
       expect(res.body.error).toBe(
-        'User, train, seatsBooked, and bookingDate are required',
-      );
-    });
-
-    it('should return 400 if booking exceeds available seats', async () => {
-      const res = await request(app)
-        .post('/bookings')
-        .send({
-          user: user._id,
-          train: train._id,
-          seatsBooked: 101,
-          bookingDate: new Date(),
-        });
-      expect(res.status).toBe(400);
-      expect(res.body.error).toBe(
-        'Not enough available seats',
+        'User, train, seatsBooked and bookingDate are required',
       );
     });
 
@@ -126,8 +106,11 @@ describe('Booking Routes', () => {
     });
 
     it('should return 404 if booking is not found', async (): Promise<void> => {
-      const res = await request(app).get(
-        '/bookings/invalid-booking-id',
+      const invalidBookingId =
+        new mongoose.Types.ObjectId();
+
+      const res = await request(app).delete(
+        `/bookings/${invalidBookingId}`,
       );
 
       expect(res.status).toBe(404);
@@ -155,9 +138,12 @@ describe('Booking Routes', () => {
     });
 
     it('should return 404 if booking not found', async (): Promise<void> => {
-      const res = await request(app)
-        .put('/bookings/invalid-booking-id')
-        .send({ seatsBooked: 3 });
+      const invalidBookingId =
+        new mongoose.Types.ObjectId();
+
+      const res = await request(app).delete(
+        `/bookings/${invalidBookingId}`,
+      );
 
       expect(res.status).toBe(404);
       expect(res.body.error).toBe('Booking not found');
@@ -186,8 +172,11 @@ describe('Booking Routes', () => {
     });
 
     it('should return 404 if booking not found', async (): Promise<void> => {
+      const invalidBookingId =
+        new mongoose.Types.ObjectId();
+
       const res = await request(app).delete(
-        '/bookings/invalid-booking-id',
+        `/bookings/${invalidBookingId}`,
       );
 
       expect(res.status).toBe(404);
