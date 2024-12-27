@@ -1,5 +1,5 @@
 import { query } from 'express-validator';
-import { validate } from './validationMiddleware';
+import { validate } from '../middleware/validationMiddleware';
 import { RequestHandler } from 'express';
 
 export const trainSearchValidationRules = [

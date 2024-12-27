@@ -3,7 +3,7 @@ import { searchTrains } from '../controllers/trainController';
 import {
   trainSearchValidationRules,
   validateTrainSearch,
-} from '../middleware/validateTrainSearch';
+} from '../validators/validateTrainSearch';
 
 const router: Router = express.Router();
 
