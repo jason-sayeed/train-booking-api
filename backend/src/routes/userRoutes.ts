@@ -6,7 +6,8 @@ import {
   deleteUser,
 } from '../controllers/userController';
 import {
-  userValidationRules,
+  createUserValidationRules,
+  updateUserValidationRules,
   validateUser,
 } from '../validators/validateUser';
 
@@ -15,13 +16,13 @@ const router: Router = express.Router();
 router.get('/:id', getUser);
 router.post(
   '/',
-  userValidationRules,
+  createUserValidationRules,
   validateUser,
   createUser,
 );
 router.put(
   '/:id',
-  userValidationRules,
+  updateUserValidationRules,
   validateUser,
   updateUser,
 );

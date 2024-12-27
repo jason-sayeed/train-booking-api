@@ -14,12 +14,16 @@ export const createUser: RequestHandler = async (
   try {
     const { name, email, password } = req.body;
 
-    if (!email || !password || !name) {
-      return sendError(
-        res,
-        'Name, email, and password are required',
-        400,
-      );
+    if (!email) {
+      return sendError(res, 'Email is required', 400);
+    }
+
+    if (!password) {
+      return sendError(res, 'Password is required', 400);
+    }
+
+    if (!name) {
+      return sendError(res, 'Name is required', 400);
     }
 
     const existingUser = await User.findOne({ email });

@@ -13,13 +13,28 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import hpp from 'hpp';
 
 dotenv.config();
 
 const app: Application = express();
 
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
+app.use(mongoSanitize());
+app.use(hpp());
+
+app.use(
+  (_req: Request, res: Response, next: NextFunction) => {
+    res.setTimeout(30000, () => {
+      res.status(408).json({ error: 'Request Timeout' });
+    });
+    next();
+  },
+);
 
 if (!process.env.SESSION_SECRET) {
   throw new Error(
@@ -39,9 +54,10 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 300000000,
+      maxAge: 24 * 60 * 60 * 1000,
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
+      sameSite: 'strict',
     },
     store: mongoStore,
   }),

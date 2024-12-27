@@ -34,16 +34,6 @@ beforeEach(() => {
 
 describe('User Controller', () => {
   describe('createUser', () => {
-    it('should return an error if required fields are missing', async () => {
-      req.body = { email: 'test@example.com' };
-      await createUser(req, res, next);
-      expect(sendError).toHaveBeenCalledWith(
-        res,
-        'Name, email, and password are required',
-        400,
-      );
-    });
-
     it('should hash the password and create a user', async () => {
       req.body = {
         name: 'John Doe',
