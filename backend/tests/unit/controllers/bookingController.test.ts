@@ -38,7 +38,7 @@ describe('Booking Controller', () => {
 
       expect(sendError).toHaveBeenCalledWith(
         res,
-        'User, train, seatsBooked, and bookingDate are required',
+        'User, train, seatsBooked and bookingDate are required',
         400,
       );
     });

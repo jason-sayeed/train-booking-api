@@ -17,7 +17,7 @@ export const createBooking: RequestHandler = async (
     if (!user || !train || !seatsBooked || !bookingDate) {
       return sendError(
         res,
-        'User, train, seatsBooked, and bookingDate are required',
+        'User, train, seatsBooked and bookingDate are required',
         400,
       );
     }
