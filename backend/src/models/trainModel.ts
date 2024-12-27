@@ -10,11 +10,9 @@ interface ITrain extends Document {
   route: Schema.Types.ObjectId;
   departureTime: Date;
   arrivalTime: Date;
-  availableDates: {
-    date: Date;
-    availableSeats: number;
-    seatsBooked: number;
-  }[];
+  operatingDate: Date;
+  availableSeats: number;
+  seatsBooked: number;
 }
 
 const trainSchema: Schema = new Schema({
@@ -36,29 +34,19 @@ const trainSchema: Schema = new Schema({
     type: Date,
     required: true,
   },
-  availableDates: {
-    type: [
-      {
-        date: {
-          type: Date,
-          required: true,
-        },
-        availableSeats: {
-          type: Number,
-          required: true,
-          min: [
-            1,
-            'There must be at least one seat on the train',
-          ],
-        },
-        seatsBooked: {
-          type: Number,
-          default: 0,
-          min: [0, 'Seats booked cannot be less than 0'],
-        },
-      },
-    ],
+  operatingDate: {
+    type: Date,
     required: true,
+  },
+  availableSeats: {
+    type: Number,
+    required: true,
+    min: [1, '`availableSeats` cannot be less than 1'],
+  },
+  seatsBooked: {
+    type: Number,
+    default: 0,
+    min: [0, 'Seats booked cannot be less than 0'],
   },
 });
 
