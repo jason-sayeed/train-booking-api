@@ -29,24 +29,18 @@ beforeEach(() => {
 
 describe('Train Controller', () => {
   describe('searchTrains', () => {
-    it('should return an error if route or date is missing', async (): Promise<void> => {
-      req.query = { startStation: 'Station A' };
-
-      await searchTrains(req, res, next);
-
-      expect(sendError).toHaveBeenCalledWith(
-        res,
-        'Route and date are required',
-        400,
-      );
-    });
-
-    it('should return an error if no trains are found for the specified route and date', async (): Promise<void> => {
+    it('should return an error if no trains are found for the specified route, date and seat count', async (): Promise<void> => {
       req.query = {
         startStation: 'Station A',
         endStation: 'Station B',
         date: '2024-12-25',
       };
+
+      (Route.findOne as jest.Mock).mockResolvedValue({
+        _id: 'route1',
+        startStation: 'Station A',
+        endStation: 'Station B',
+      });
 
       (Train.find as jest.Mock).mockResolvedValue([]);
 
@@ -54,16 +48,17 @@ describe('Train Controller', () => {
 
       expect(sendError).toHaveBeenCalledWith(
         res,
-        'Route not found',
+        'No trains found for the specified route, date and seat count',
         404,
       );
     });
 
-    it('should return trains if found for the specified route and date', async (): Promise<void> => {
+    it('should return trains if found for the specified route, date and seat count', async (): Promise<void> => {
       req.query = {
         startStation: 'Station A',
         endStation: 'Station B',
         date: '2024-12-25',
+        numberOfSeatsRequested: '5',
       };
 
       const mockRoute = {
@@ -78,28 +73,16 @@ describe('Train Controller', () => {
           route: mockRoute._id,
           departureTime: new Date('2024-12-25T08:00:00Z'),
           arrivalTime: new Date('2024-12-25T10:00:00Z'),
+          operatingDate: new Date('2024-12-25'),
           availableSeats: 100,
-          availableDates: [
-            {
-              date: '2024-12-25T00:00:00.000Z',
-              availableSeats: 100,
-              seatsBooked: 0,
-            },
-          ],
         },
         {
           _id: 'train2',
           route: mockRoute._id,
           departureTime: new Date('2024-12-25T12:00:00Z'),
           arrivalTime: new Date('2024-12-25T14:00:00Z'),
+          operatingDate: new Date('2024-12-25'),
           availableSeats: 80,
-          availableDates: [
-            {
-              date: '2024-12-25T00:00:00.000Z',
-              availableSeats: 80,
-              seatsBooked: 0,
-            },
-          ],
         },
       ];
 
@@ -120,6 +103,66 @@ describe('Train Controller', () => {
           arrivalTime: train.arrivalTime,
           availableSeats: train.availableSeats,
         })),
+      );
+    });
+
+    it('should return an error if route is not found', async (): Promise<void> => {
+      req.query = {
+        startStation: 'Station A',
+        endStation: 'Station B',
+        date: '2024-12-25',
+        numberOfSeatsRequested: '5',
+      };
+
+      (Route.findOne as jest.Mock).mockResolvedValue(null); // No route found
+
+      await searchTrains(req, res, next);
+
+      expect(sendError).toHaveBeenCalledWith(
+        res,
+        'Route not found',
+        404,
+      );
+    });
+
+    it('should return an error if no trains have sufficient available seats', async () => {
+      req.query = {
+        startStation: 'Station A',
+        endStation: 'Station B',
+        date: '2024-12-25',
+        numberOfSeatsRequested: '50',
+      };
+
+      const mockRoute = {
+        _id: 'route1',
+        startStation: 'Station A',
+        endStation: 'Station B',
+      };
+
+      (Route.findOne as jest.Mock).mockResolvedValue(
+        mockRoute,
+      );
+
+      (Train.find as jest.Mock).mockImplementation(
+        (query) => {
+          const mockTrains = [
+            { _id: 'train1', availableSeats: 30 },
+            { _id: 'train2', availableSeats: 40 },
+          ];
+          return mockTrains.filter(
+            (train): boolean =>
+              train.availableSeats >
+              query.availableSeats.$gt,
+          );
+        },
+      );
+
+      await searchTrains(req, res, next);
+
+      expect(sendError).toHaveBeenCalledWith(
+        res,
+        'No trains found for the specified route, date and seat count',
+        404,
       );
     });
 

@@ -11,15 +11,17 @@ export const searchTrains: RequestHandler = async (
   res,
 ): Promise<void> => {
   try {
-    const { startStation, endStation, date } = req.query;
+    const {
+      startStation,
+      endStation,
+      date,
+      numberOfSeatsRequested,
+    } = req.query;
 
-    if (!startStation || !endStation || !date) {
-      return sendError(
-        res,
-        'Route and date are required',
-        400,
-      );
-    }
+    const seatCount: number = parseInt(
+      numberOfSeatsRequested as string,
+      10,
+    );
 
     const route = await Route.findOne({
       startStation,
@@ -32,39 +34,24 @@ export const searchTrains: RequestHandler = async (
 
     const trains = await Train.find({
       route: route._id,
-      'availableDates.date': {
-        $in: date as string,
-      },
+      operatingDate: new Date(date as string),
+      availableSeats: { $gte: seatCount },
     });
 
     if (!trains.length) {
       return sendError(
         res,
-        'No trains found for the specified route and date',
+        'No trains found for the specified route, date and seat count',
         404,
       );
     }
 
-    const trainsWithSeats = trains.flatMap((train) => {
-      return train.availableDates
-        .map((dateObj) => ({
-          trainId: train._id.toString(),
-          departureTime: train.departureTime,
-          arrivalTime: train.arrivalTime,
-          availableSeats: dateObj.availableSeats,
-        }))
-        .filter(
-          (dateObj): boolean => dateObj.availableSeats > 0,
-        );
-    });
-
-    if (!trainsWithSeats.length) {
-      return sendError(
-        res,
-        'No trains available for the specified date and route',
-        404,
-      );
-    }
+    const trainsWithSeats = trains.map((train) => ({
+      trainId: train._id.toString(),
+      departureTime: train.departureTime,
+      arrivalTime: train.arrivalTime,
+      availableSeats: train.availableSeats,
+    }));
 
     return sendSuccess(res, trainsWithSeats);
   } catch (error: unknown) {
