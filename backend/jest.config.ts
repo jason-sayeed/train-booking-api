@@ -26,4 +26,13 @@ export default {
     'json',
     'node',
   ],
+
+  collectCoverage: true, // Enable coverage collection
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}', // Adjust to match your source code files
+    '!src/**/*.d.ts', // Optionally exclude declaration files from coverage
+  ],
+  coverageDirectory: 'coverage', // Specify the directory to output coverage reports
+  coverageProvider: 'v8', // Use the V8 coverage provider (can also use 'babel')
+  coverageReporters: ['text', 'lcov'], // Output coverage reports in text and lcov formats
 };
