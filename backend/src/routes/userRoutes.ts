@@ -8,8 +8,8 @@ import {
 import {
   createUserValidationRules,
   updateUserValidationRules,
-  validateUser,
 } from '../validators/validateUser';
+import { validate } from '../middleware/validationMiddleware';
 
 const router: Router = express.Router();
 
@@ -17,13 +17,13 @@ router.get('/:id', getUser);
 router.post(
   '/',
   createUserValidationRules,
-  validateUser,
+  validate,
   createUser,
 );
 router.put(
   '/:id',
   updateUserValidationRules,
-  validateUser,
+  validate,
   updateUser,
 );
 router.delete('/:id', deleteUser);

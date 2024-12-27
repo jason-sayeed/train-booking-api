@@ -1,6 +1,4 @@
 import { body } from 'express-validator';
-import { validate } from '../middleware/validationMiddleware';
-import { RequestHandler } from 'express';
 
 export const createUserValidationRules = [
   body('email')
@@ -55,5 +53,3 @@ export const updateUserValidationRules = [
     )
     .trim(),
 ];
-
-export const validateUser: RequestHandler = validate;

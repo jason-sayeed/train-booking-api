@@ -1,6 +1,4 @@
 import { query } from 'express-validator';
-import { validate } from '../middleware/validationMiddleware';
-import { RequestHandler } from 'express';
 
 export const trainSearchValidationRules = [
   query('startStation')
@@ -22,5 +20,3 @@ export const trainSearchValidationRules = [
       'numberOfSeatsRequested must be a positive number',
     ),
 ];
-
-export const validateTrainSearch: RequestHandler = validate;
