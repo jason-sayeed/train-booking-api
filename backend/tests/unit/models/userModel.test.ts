@@ -55,19 +55,7 @@ describe('User Model', () => {
     );
   });
 
-  it('should not save a user with an invalid email', async () => {
-    const user = new User({
-      name: 'Test User',
-      email: 'invalid-email',
-      password: 'password123',
-    });
-
-    await expect(user.save()).rejects.toThrow(
-      /invalid-email is not a valid email/,
-    );
-  });
-
-  it('should not save a user with a password less than 6 characters', async () => {
+  it('should not save a user with a password less than 8 characters', async () => {
     const user = new User({
       name: 'Test User',
       email: 'testuser@doesnotexist.com',
@@ -75,7 +63,7 @@ describe('User Model', () => {
     });
 
     await expect(user.save()).rejects.toThrow(
-      /Password must be at least 6 characters long/,
+      /Password must be at least 8 characters long/,
     );
   });
 

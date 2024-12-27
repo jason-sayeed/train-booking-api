@@ -1,10 +1,6 @@
-import { query, validationResult } from 'express-validator';
-import {
-  Request,
-  Response,
-  NextFunction,
-  RequestHandler,
-} from 'express';
+import { query } from 'express-validator';
+import { validate } from './validationMiddleware';
+import { RequestHandler } from 'express';
 
 export const trainSearchValidationRules = [
   query('startStation')
@@ -27,15 +23,4 @@ export const trainSearchValidationRules = [
     ),
 ];
 
-export const validateTrainSearch: RequestHandler = (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-): void => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    res.status(400).json({ errors: errors.array() });
-    return;
-  }
-  next();
-};
+export const validateTrainSearch: RequestHandler = validate;

@@ -23,22 +23,13 @@ const userSchema: Schema = new Schema({
     unique: true,
     trim: true,
     lowercase: true,
-    validate: {
-      validator: (value: string): boolean => {
-        return /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(
-          value,
-        );
-      },
-      message: (props: { value: string }): string =>
-        `${props.value} is not a valid email`,
-    },
   },
   password: {
     type: String,
     required: [true, 'Password is required'],
     minlength: [
-      6,
-      'Password must be at least 6 characters long',
+      8,
+      'Password must be at least 8 characters long',
     ],
   },
 });
