@@ -59,8 +59,8 @@ describe('Booking Routes', () => {
   describe('POST /bookings', () => {
     it('should create a new booking and return 201', async (): Promise<void> => {
       const bookingData = {
-        user: user._id,
-        train: train._id,
+        userId: user._id,
+        trainId: train._id,
         seatsBooked: 2,
         bookingDate: new Date(),
       };
@@ -71,15 +71,15 @@ describe('Booking Routes', () => {
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('_id');
-      expect(res.body.user).toBe(user._id.toString());
-      expect(res.body.train).toBe(train._id.toString());
+      expect(res.body.userId).toBe(user._id.toString());
+      expect(res.body.trainId).toBe(train._id.toString());
       expect(res.body.seatsBooked).toBe(2);
     });
 
     it('should return 400 if required fields are missing', async (): Promise<void> => {
       const res = await agent
         .post('/bookings')
-        .send({ user: user._id, train: train._id });
+        .send({ user: user._id, trainId: train._id });
 
       expect(res.status).toBe(400);
       expect(res.body.error).toBe(
@@ -90,7 +90,7 @@ describe('Booking Routes', () => {
     it('should return 400 for invalid booking date', async () => {
       const res = await agent.post('/bookings').send({
         user: user._id,
-        train: train._id,
+        trainId: train._id,
         seatsBooked: 2,
         bookingDate: 'invalid-date',
       });
@@ -104,8 +104,8 @@ describe('Booking Routes', () => {
   describe('GET /bookings/:id', () => {
     it('should return a booking by ID', async (): Promise<void> => {
       const bookingData = {
-        user: user._id,
-        train: train._id,
+        userId: user._id,
+        trainId: train._id,
         seatsBooked: 2,
         bookingDate: new Date(),
       };
@@ -118,8 +118,8 @@ describe('Booking Routes', () => {
 
       expect(res.status).toBe(200);
       expect(res.body._id).toBe(booking._id.toString());
-      expect(res.body.user).toBe(user._id.toString());
-      expect(res.body.train).toBe(train._id.toString());
+      expect(res.body.userId).toBe(user._id.toString());
+      expect(res.body.trainId).toBe(train._id.toString());
       expect(res.body.seatsBooked).toBe(2);
     });
 
@@ -139,8 +139,8 @@ describe('Booking Routes', () => {
   describe('PUT /bookings/:id', () => {
     it('should update a booking and return the updated booking', async (): Promise<void> => {
       const bookingData = {
-        user: user._id,
-        train: train._id,
+        userId: user._id,
+        trainId: train._id,
         seatsBooked: 2,
         bookingDate: new Date(),
       };
@@ -171,8 +171,8 @@ describe('Booking Routes', () => {
   describe('DELETE /bookings/:id', () => {
     it('should delete a booking and return a success message', async (): Promise<void> => {
       const bookingData = {
-        user: user._id,
-        train: train._id,
+        userId: user._id,
+        trainId: train._id,
         seatsBooked: 2,
         bookingDate: new Date(),
       };

@@ -57,7 +57,7 @@ if (!process.env.SESSION_SECRET) {
 }
 
 const mongoStore: MongoStore = new MongoStore({
-  mongoUrl: process.env.MONGODB_URL as string,
+  mongoUrl: process.env.MONGODB_URL,
   ttl: 2 * 24 * 60 * 60,
   autoRemove: 'native',
 });
@@ -89,9 +89,13 @@ app.use((_req: Request, res: Response) => {
   res.status(404).json({ error: 'Not Found' });
 });
 
+interface CustomError extends Error {
+  status?: number;
+}
+
 app.use(
   (
-    err: Error & { status?: number },
+    err: CustomError,
     _req: Request,
     res: Response,
     _next: NextFunction,

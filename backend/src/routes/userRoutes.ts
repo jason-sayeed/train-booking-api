@@ -10,10 +10,11 @@ import {
   updateUserValidationRules,
 } from '../validators/validateUser';
 import { validate } from '../middleware/validationMiddleware';
+import { ensureAuthenticated } from '../middleware/authMiddleware';
 
 const router: Router = express.Router();
 
-router.get('/:id', getUser);
+router.get('/:id', ensureAuthenticated, getUser);
 router.post(
   '/',
   createUserValidationRules,
@@ -22,10 +23,11 @@ router.post(
 );
 router.put(
   '/:id',
+  ensureAuthenticated,
   updateUserValidationRules,
   validate,
   updateUser,
 );
-router.delete('/:id', deleteUser);
+router.delete('/:id', ensureAuthenticated, deleteUser);
 
 export default router;

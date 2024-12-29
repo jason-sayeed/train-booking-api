@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 
 export const connectToDatabase =
   async (): Promise<void> => {
-    const dbUrl = process.env.MONGODB_URL;
+    const dbUrl: string = process.env.MONGODB_URL;
 
     if (!dbUrl) {
       throw new Error(
@@ -10,7 +10,7 @@ export const connectToDatabase =
       );
     }
     try {
-      await mongoose.connect(dbUrl as string);
+      await mongoose.connect(dbUrl);
       if (process.env.NODE_ENV !== 'test') {
         console.info(
           'MongoDB connection started successfully.',

@@ -5,20 +5,20 @@ import mongoose, {
 } from 'mongoose';
 
 interface IBooking extends Document {
-  _id: string;
-  user: Schema.Types.ObjectId;
-  train: Schema.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+  trainId: mongoose.Types.ObjectId;
   seatsBooked: number;
   bookingDate: Date;
 }
 
 const bookingSchema = new Schema<IBooking>({
-  user: {
+  userId: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true,
   },
-  train: {
+  trainId: {
     type: Schema.Types.ObjectId,
     ref: 'Train',
     required: true,

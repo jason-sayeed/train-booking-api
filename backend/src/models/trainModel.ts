@@ -5,9 +5,9 @@ import mongoose, {
 } from 'mongoose';
 
 interface ITrain extends Document {
-  _id: Schema.Types.ObjectId;
+  _id: mongoose.Types.ObjectId;
   name: string;
-  route: Schema.Types.ObjectId;
+  route: mongoose.Types.ObjectId;
   departureTime: Date;
   arrivalTime: Date;
   operatingDate: Date;

@@ -36,7 +36,7 @@ describe('Booking Controller', () => {
     it('should return an error if required fields are missing', async (): Promise<void> => {
       req.user = { _id: 'mockUserId' };
       req.body = {
-        train: 'trainId',
+        trainId: 'mockTrainId',
         seatsBooked: 2,
       };
 
@@ -52,7 +52,7 @@ describe('Booking Controller', () => {
     it('should create and return a booking if all fields are valid', async (): Promise<void> => {
       req.user = { _id: 'mockUserId' };
       req.body = {
-        train: 'trainId',
+        trainId: 'mockTrainId',
         seatsBooked: 2,
         bookingDate: '2024-12-29T12:00:00.000Z',
       };
@@ -69,8 +69,8 @@ describe('Booking Controller', () => {
       await createBooking(req, res, next);
 
       expect(Booking.create).toHaveBeenCalledWith({
-        user: 'mockUserId',
-        train: 'trainId',
+        userId: 'mockUserId',
+        trainId: 'mockTrainId',
         seatsBooked: 2,
         bookingDate: '2024-12-29T12:00:00.000Z',
       });
@@ -120,8 +120,8 @@ describe('Booking Controller', () => {
       req.params.id = 'bookingId123';
       const mockBooking = {
         _id: 'bookingId123',
-        user: 'userId',
-        train: 'trainId',
+        userId: 'userId',
+        trainId: 'trainId',
         seatsBooked: 2,
         bookingDate: new Date(),
       };
@@ -183,8 +183,8 @@ describe('Booking Controller', () => {
 
       const mockUpdatedBooking = {
         _id: 'bookingId123',
-        user: 'userId',
-        train: 'trainId',
+        userId: 'userId',
+        trainId: 'trainId',
         seatsBooked: 3,
         bookingDate: new Date(),
       };

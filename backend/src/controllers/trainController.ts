@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
-import Train from '../models/trainModel';
-import Route from '../models/routesModel';
+import Train, { ITrain } from '../models/trainModel';
+import Route, { IRoute } from '../models/routesModel';
 import {
   sendError,
   sendSuccess,
@@ -23,7 +23,7 @@ export const searchTrains: RequestHandler = async (
       10,
     );
 
-    const route = await Route.findOne({
+    const route: IRoute | null = await Route.findOne({
       startStation,
       endStation,
     });
@@ -32,7 +32,7 @@ export const searchTrains: RequestHandler = async (
       return sendError(res, 'Route not found', 404);
     }
 
-    const trains = await Train.find({
+    const trains: ITrain[] = await Train.find({
       route: route._id,
       operatingDate: new Date(date as string),
       availableSeats: { $gte: seatCount },
@@ -46,12 +46,26 @@ export const searchTrains: RequestHandler = async (
       );
     }
 
-    const trainsWithSeats = trains.map((train) => ({
-      trainId: train._id.toString(),
-      departureTime: train.departureTime,
-      arrivalTime: train.arrivalTime,
-      availableSeats: train.availableSeats,
-    }));
+    const trainsWithSeats: {
+      trainId: string;
+      departureTime: Date;
+      arrivalTime: Date;
+      availableSeats: number;
+    }[] = trains.map(
+      (
+        train: ITrain,
+      ): {
+        trainId: string;
+        departureTime: Date;
+        arrivalTime: Date;
+        availableSeats: number;
+      } => ({
+        trainId: train._id.toString(),
+        departureTime: train.departureTime,
+        arrivalTime: train.arrivalTime,
+        availableSeats: train.availableSeats,
+      }),
+    );
 
     return sendSuccess(res, trainsWithSeats);
   } catch (error: unknown) {

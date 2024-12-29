@@ -12,8 +12,8 @@ describe('Booking Model', () => {
     const trainId = new mongoose.Types.ObjectId();
 
     const booking = new Booking({
-      user: userId,
-      train: trainId,
+      userId: userId,
+      trainId: trainId,
       seatsBooked: 2,
       bookingDate: new Date(),
     });
@@ -21,8 +21,8 @@ describe('Booking Model', () => {
     const savedBooking = await booking.save();
 
     expect(savedBooking._id).toBeDefined();
-    expect(savedBooking.user).toBe(userId);
-    expect(savedBooking.train).toBe(trainId);
+    expect(savedBooking.userId).toBe(userId);
+    expect(savedBooking.trainId).toBe(trainId);
     expect(savedBooking.seatsBooked).toBe(2);
     expect(savedBooking.bookingDate).toBeDefined();
   });
@@ -31,13 +31,13 @@ describe('Booking Model', () => {
     const trainId = new mongoose.Types.ObjectId();
 
     const booking = new Booking({
-      train: trainId,
+      trainId: trainId,
       seatsBooked: 2,
       bookingDate: new Date(),
     });
 
     await expect(booking.save()).rejects.toThrow(
-      /Path `user` is required/,
+      /Path `userId` is required/,
     );
   });
 
@@ -45,13 +45,13 @@ describe('Booking Model', () => {
     const userId = new mongoose.Types.ObjectId();
 
     const booking = new Booking({
-      user: userId,
+      userId: userId,
       seatsBooked: 2,
       bookingDate: new Date(),
     });
 
     await expect(booking.save()).rejects.toThrow(
-      /Path `train` is required/,
+      /Path `trainId` is required/,
     );
   });
 
@@ -60,8 +60,8 @@ describe('Booking Model', () => {
     const trainId = new mongoose.Types.ObjectId();
 
     const booking = new Booking({
-      user: userId,
-      train: trainId,
+      userId: userId,
+      trainId: trainId,
       bookingDate: new Date(),
     });
 
@@ -75,8 +75,8 @@ describe('Booking Model', () => {
     const trainId = new mongoose.Types.ObjectId();
 
     const booking = new Booking({
-      user: userId,
-      train: trainId,
+      userId: userId,
+      trainId: trainId,
       seatsBooked: 0,
       bookingDate: new Date(),
     });
@@ -91,18 +91,18 @@ describe('Booking Model', () => {
     const trainId = new mongoose.Types.ObjectId();
 
     const booking = new Booking({
-      user: userId,
-      train: trainId,
+      userId: userId,
+      trainId: trainId,
       seatsBooked: 2,
       bookingDate: new Date(),
     });
     await booking.save();
 
     const foundBookings = await Booking.find({
-      user: userId,
+      userId: userId,
     });
     expect(foundBookings.length).toBe(1);
-    expect(foundBookings[0].user.toString()).toBe(
+    expect(foundBookings[0].userId.toString()).toBe(
       userId.toString(),
     );
   });
@@ -112,8 +112,8 @@ describe('Booking Model', () => {
     const trainId = new mongoose.Types.ObjectId();
 
     const booking = new Booking({
-      user: userId,
-      train: trainId,
+      userId: userId,
+      trainId: trainId,
       seatsBooked: 2,
       bookingDate: new Date(),
     });
@@ -130,8 +130,8 @@ describe('Booking Model', () => {
     const trainId = new mongoose.Types.ObjectId();
 
     const booking = new Booking({
-      user: userId,
-      train: trainId,
+      userId: userId,
+      trainId: trainId,
       seatsBooked: 2,
       bookingDate: new Date(),
     });

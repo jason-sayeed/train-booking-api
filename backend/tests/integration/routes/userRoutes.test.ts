@@ -2,6 +2,7 @@ import request from 'supertest';
 import { app } from '../../../src/app';
 import User from '../../../src/models/userModel';
 import '../../mongodb_helper';
+import { hashPassword } from '../../../src/utils/hashPassword';
 
 describe('User Routes', () => {
   const userData = {
@@ -40,11 +41,22 @@ describe('User Routes', () => {
 
   describe('GET /users/:id', () => {
     it('should return a user by ID', async (): Promise<void> => {
-      const user = await User.create(userData);
-
-      const res = await request(app).get(
-        `/users/${user._id}`,
+      const hashedPassword: string = await hashPassword(
+        userData.password,
       );
+      const user = await User.create({
+        ...userData,
+        password: hashedPassword,
+      });
+
+      const agent = request.agent(app);
+
+      await agent.post('/auth/login').send({
+        email: userData.email,
+        password: userData.password,
+      });
+
+      const res = await agent.get(`/users/${user._id}`);
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('_id');
@@ -55,9 +67,22 @@ describe('User Routes', () => {
 
   describe('PUT /users/:id', () => {
     it('should update a user and return the updated user', async (): Promise<void> => {
-      const user = await User.create(userData);
+      const hashedPassword: string = await hashPassword(
+        userData.password,
+      );
+      const user = await User.create({
+        ...userData,
+        password: hashedPassword,
+      });
 
-      const res = await request(app)
+      const agent = request.agent(app);
+
+      await agent.post('/auth/login').send({
+        email: userData.email,
+        password: userData.password,
+      });
+
+      const res = await agent
         .put(`/users/${user._id}`)
         .send({ name: 'Updated Name' });
 
@@ -67,7 +92,23 @@ describe('User Routes', () => {
     });
 
     it('should return 400 if the user is not found', async (): Promise<void> => {
-      const res = await request(app)
+      const hashedPassword: string = await hashPassword(
+        userData.password,
+      );
+
+      await User.create({
+        ...userData,
+        password: hashedPassword,
+      });
+
+      const agent = request.agent(app);
+
+      await agent.post('/auth/login').send({
+        email: userData.email,
+        password: userData.password,
+      });
+
+      const res = await agent
         .put(`/users/'invalid-id`)
         .send({ name: 'Updated Name' });
 
@@ -78,11 +119,23 @@ describe('User Routes', () => {
 
   describe('DELETE /users/:id', () => {
     it('should delete a user by ID and return a success message', async (): Promise<void> => {
-      const user = await User.create(userData);
-
-      const res = await request(app).delete(
-        `/users/${user._id}`,
+      const hashedPassword: string = await hashPassword(
+        userData.password,
       );
+
+      const user = await User.create({
+        ...userData,
+        password: hashedPassword,
+      });
+
+      const agent = request.agent(app);
+
+      await agent.post('/auth/login').send({
+        email: userData.email,
+        password: userData.password,
+      });
+
+      const res = await agent.delete(`/users/${user._id}`);
 
       expect(res.status).toBe(200);
       expect(res.body.message).toBe(
@@ -91,9 +144,23 @@ describe('User Routes', () => {
     });
 
     it('should return 400 if the user is not found', async (): Promise<void> => {
-      const res = await request(app).delete(
-        '/users/invalid-id',
+      const hashedPassword: string = await hashPassword(
+        userData.password,
       );
+
+      await User.create({
+        ...userData,
+        password: hashedPassword,
+      });
+
+      const agent = request.agent(app);
+
+      await agent.post('/auth/login').send({
+        email: userData.email,
+        password: userData.password,
+      });
+
+      const res = await agent.delete('/users/invalid-id');
 
       expect(res.status).toBe(400);
       expect(res.body.error).toBe('Invalid ID format');

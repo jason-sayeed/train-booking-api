@@ -17,7 +17,7 @@ describe('Train Routes', () => {
 
   const trainData: {
     name: string;
-    route: mongoose.Schema.Types.ObjectId | null;
+    route: mongoose.Types.ObjectId | null;
     departureTime: Date;
     arrivalTime: Date;
     operatingDate: Date;
@@ -42,8 +42,7 @@ describe('Train Routes', () => {
 
     route = await Route.create(routeData);
 
-    trainData.route =
-      route._id as mongoose.Schema.Types.ObjectId;
+    trainData.route = route._id as mongoose.Types.ObjectId;
 
     train = await Train.create(trainData);
   });

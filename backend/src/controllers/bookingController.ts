@@ -6,6 +6,7 @@ import {
   sendSuccess,
 } from '../utils/responseHelper';
 import { IUser } from '../models/userModel';
+import { IBooking } from '../models/bookingModel';
 
 export const createBooking: RequestHandler = async (
   req,
@@ -17,9 +18,9 @@ export const createBooking: RequestHandler = async (
     }
 
     const user = req.user as IUser;
-    const { train, seatsBooked, bookingDate } = req.body;
+    const { trainId, seatsBooked, bookingDate } = req.body;
 
-    if (!train) {
+    if (!trainId) {
       return sendError(res, 'train is required', 400);
     }
 
@@ -31,8 +32,8 @@ export const createBooking: RequestHandler = async (
       return sendError(res, 'bookingDate is required', 400);
     }
 
-    const savedBooking = await Booking.create({
-      user: user._id,
+    const savedBooking: IBooking = await Booking.create({
+      userId: user._id,
       ...req.body,
     });
 
@@ -47,7 +48,9 @@ export const getBookingById: RequestHandler = async (
   res,
 ): Promise<void> => {
   try {
-    const booking = await Booking.findById(req.params.id);
+    const booking: IBooking | null = await Booking.findById(
+      req.params.id,
+    );
     if (!booking) {
       return sendError(res, 'Booking not found', 404);
     }
@@ -71,11 +74,12 @@ export const updateBooking: RequestHandler = async (
       );
     }
 
-    const updatedBooking = await Booking.findByIdAndUpdate(
-      req.params.id,
-      { seatsBooked, bookingDate },
-      { new: true, runValidators: true },
-    );
+    const updatedBooking: IBooking | null =
+      await Booking.findByIdAndUpdate(
+        req.params.id,
+        { seatsBooked, bookingDate },
+        { new: true, runValidators: true },
+      );
 
     if (!updatedBooking) {
       return sendError(res, 'Booking not found', 404);
@@ -92,9 +96,8 @@ export const deleteBooking: RequestHandler = async (
   res,
 ): Promise<void> => {
   try {
-    const deletedBooking = await Booking.findByIdAndDelete(
-      req.params.id,
-    );
+    const deletedBooking: IBooking | null =
+      await Booking.findByIdAndDelete(req.params.id);
     if (!deletedBooking) {
       return sendError(res, 'Booking not found', 404);
     }

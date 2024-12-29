@@ -9,12 +9,16 @@ passport.use(
     async (
       email: string,
       password: string,
-      done,
+      done: (
+        error: Error | null,
+        user?: false | IUser,
+        options?: { message: string },
+      ) => void,
     ): Promise<void> => {
       try {
-        const user = (await User.findOne({
+        const user = await User.findOne({
           email,
-        })) as IUser;
+        });
 
         if (!user) {
           return done(null, false, {
@@ -34,8 +38,11 @@ passport.use(
         }
 
         return done(null, user);
-      } catch (error: unknown) {
-        return done(error);
+      } catch (error) {
+        if (error instanceof Error) {
+          return done(error);
+        }
+        return done(new Error('An unknown error occurred'));
       }
     },
   ),
@@ -59,9 +66,7 @@ passport.deserializeUser(
     done: (err: Error | null, user?: IUser | false) => void,
   ): Promise<void> => {
     try {
-      const user = (await User.findById(
-        id,
-      )) as IUser | null;
+      const user = await User.findById(id);
       if (!user) {
         return done(null, false);
       }

@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import User from '../models/userModel';
+import User, { IUser } from '../models/userModel';
 import { hashPassword } from '../utils/hashPassword';
 import { handleError } from '../utils/handleError';
 import {
@@ -26,14 +26,16 @@ export const createUser: RequestHandler = async (
       return sendError(res, 'Name is required', 400);
     }
 
-    const existingUser = await User.findOne({ email });
+    const existingUser: IUser | null = await User.findOne({
+      email,
+    });
     if (existingUser) {
       return sendError(res, 'Email already exists', 400);
     }
 
     const hashedPassword: string =
       await hashPassword(password);
-    const savedUser = await User.create({
+    const savedUser: IUser | null = await User.create({
       ...req.body,
       password: hashedPassword,
     });
@@ -43,9 +45,14 @@ export const createUser: RequestHandler = async (
   }
 };
 
-export const getUser: RequestHandler = async (req, res) => {
+export const getUser: RequestHandler = async (
+  req,
+  res,
+): Promise<void> => {
   try {
-    const user = await User.findById(req.params.id);
+    const user: IUser | null = await User.findById(
+      req.params.id,
+    );
     if (!user) {
       return sendError(res, 'User not found', 404);
     }
@@ -65,11 +72,12 @@ export const updateUser: RequestHandler = async (
         req.body.password,
       );
     }
-    const updatedUser = await User.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true },
-    );
+    const updatedUser: IUser | null =
+      await User.findByIdAndUpdate(
+        req.params.id,
+        req.body,
+        { new: true, runValidators: true },
+      );
     if (!updatedUser) {
       return sendError(res, 'User not found', 404);
     }
@@ -84,9 +92,8 @@ export const deleteUser: RequestHandler = async (
   res,
 ): Promise<void> => {
   try {
-    const deletedUser = await User.findByIdAndDelete(
-      req.params.id,
-    );
+    const deletedUser: IUser | null =
+      await User.findByIdAndDelete(req.params.id);
     if (!deletedUser) {
       return sendError(res, 'User not found', 404);
     }
