@@ -23,6 +23,7 @@
     "@types/express-session": "^1.18.1",
     "@types/hpp": "^0.2.6",
     "@types/jest": "^29.5.14",
+    "@types/morgan": "^1.9.9",
     "@types/node": "^22.10.1",
     "@types/passport": "^1.0.17",
     "@types/passport-local": "^1.0.38",
@@ -54,11 +55,13 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^7.5.0",
     "express-session": "^1.18.1",
     "express-validator": "^7.2.0",
     "helmet": "^8.0.0",
     "hpp": "^0.2.3",
     "mongoose": "^8.9.0",
+    "morgan": "^1.10.0",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0"
   }

@@ -16,16 +16,30 @@ import cors from 'cors';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
+import rateLimit from 'express-rate-limit';
+import morgan from 'morgan';
 
 dotenv.config();
 
 const app: Application = express();
+
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+} else {
+  app.use(morgan('combined'));
+}
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+});
 
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(mongoSanitize());
 app.use(hpp());
+app.use(limiter);
 
 app.use(
   (_req: Request, res: Response, next: NextFunction) => {
