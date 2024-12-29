@@ -34,8 +34,7 @@ export const createUser: RequestHandler = async (
     const hashedPassword: string =
       await hashPassword(password);
     const savedUser = await User.create({
-      name,
-      email,
+      ...req.body,
       password: hashedPassword,
     });
     return sendSuccess(res, savedUser, 201);
