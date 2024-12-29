@@ -49,7 +49,7 @@ passport.serializeUser(
     if (!user._id) {
       throw new Error('User id is not found');
     }
-    done(null, user._id);
+    done(null, user._id.toString());
   },
 );
 

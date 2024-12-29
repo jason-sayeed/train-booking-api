@@ -5,6 +5,7 @@ import mongoose, {
 } from 'mongoose';
 
 interface IRoute extends Document {
+  _id: Schema.Types.ObjectId;
   startStation: string;
   endStation: string;
 }

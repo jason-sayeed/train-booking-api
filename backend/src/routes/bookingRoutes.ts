@@ -5,12 +5,13 @@ import {
   getBookingById,
   deleteBooking,
 } from '../controllers/bookingController';
+import { ensureAuthenticated } from '../middleware/authMiddleware';
 
 const router: Router = express.Router();
 
-router.get('/:id', getBookingById);
-router.post('/', createBooking);
-router.put('/:id', updateBooking);
-router.delete('/:id', deleteBooking);
+router.get('/:id', ensureAuthenticated, getBookingById);
+router.post('/', ensureAuthenticated, createBooking);
+router.put('/:id', ensureAuthenticated, updateBooking);
+router.delete('/:id', ensureAuthenticated, deleteBooking);
 
 export default router;

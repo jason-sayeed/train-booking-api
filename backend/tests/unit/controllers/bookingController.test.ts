@@ -3,7 +3,12 @@ import {
   createRequest,
   createResponse,
 } from 'node-mocks-http';
-import * as bookingController from '../../../src/controllers/bookingController';
+import {
+  createBooking,
+  updateBooking,
+  deleteBooking,
+  getBookingById,
+} from '../../../src/controllers/bookingController';
 import Booking from '../../../src/models/bookingModel';
 import {
   sendError,
@@ -12,6 +17,7 @@ import {
 
 jest.mock('../../../src/models/bookingModel');
 jest.mock('../../../src/utils/responseHelper');
+import { IBooking } from '../../../src/models/bookingModel';
 
 let req: Request;
 let res: Response;
@@ -28,40 +34,46 @@ beforeEach(() => {
 describe('Booking Controller', () => {
   describe('createBooking', () => {
     it('should return an error if required fields are missing', async () => {
+      req.user = { _id: 'mockUserId' };
       req.body = {
-        user: 'userId',
         train: 'trainId',
         seatsBooked: 2,
       };
 
-      await bookingController.createBooking(req, res, next);
+      await createBooking(req, res, next);
 
       expect(sendError).toHaveBeenCalledWith(
         res,
-        'User, train, seatsBooked and bookingDate are required',
+        'bookingDate is required',
         400,
       );
     });
 
     it('should create and return a booking if all fields are valid', async () => {
+      req.user = { _id: 'mockUserId' };
       req.body = {
-        user: 'userId',
         train: 'trainId',
         seatsBooked: 2,
-        bookingDate: new Date(),
+        bookingDate: '2024-12-29T12:00:00.000Z',
       };
 
-      const mockBooking = {
-        _id: 'bookingId123',
+      const mockBooking: IBooking = {
+        _id: 'mockBookingId',
         ...req.body,
       };
-      (
-        Booking.prototype.save as jest.Mock
-      ).mockResolvedValue(mockBooking);
 
-      await bookingController.createBooking(req, res, next);
+      (Booking.create as jest.Mock).mockResolvedValue(
+        mockBooking,
+      );
 
-      expect(Booking.prototype.save).toHaveBeenCalled();
+      await createBooking(req, res, next);
+
+      expect(Booking.create).toHaveBeenCalledWith({
+        user: 'mockUserId',
+        train: 'trainId',
+        seatsBooked: 2,
+        bookingDate: '2024-12-29T12:00:00.000Z',
+      });
       expect(sendSuccess).toHaveBeenCalledWith(
         res,
         mockBooking,
@@ -85,11 +97,7 @@ describe('Booking Controller', () => {
         mockBooking,
       );
 
-      await bookingController.getBookingById(
-        req,
-        res,
-        next,
-      );
+      await getBookingById(req, res, next);
 
       expect(Booking.findById).toHaveBeenCalledWith(
         'bookingId123',
@@ -106,11 +114,7 @@ describe('Booking Controller', () => {
         null,
       );
 
-      await bookingController.getBookingById(
-        req,
-        res,
-        next,
-      );
+      await getBookingById(req, res, next);
 
       expect(sendError).toHaveBeenCalledWith(
         res,
@@ -128,7 +132,7 @@ describe('Booking Controller', () => {
         bookingDate: new Date(),
       };
 
-      await bookingController.updateBooking(req, res, next);
+      await updateBooking(req, res, next);
 
       expect(sendError).toHaveBeenCalledWith(
         res,
@@ -155,7 +159,7 @@ describe('Booking Controller', () => {
         Booking.findByIdAndUpdate as jest.Mock
       ).mockResolvedValue(mockUpdatedBooking);
 
-      await bookingController.updateBooking(req, res, next);
+      await updateBooking(req, res, next);
 
       expect(
         Booking.findByIdAndUpdate,
@@ -181,7 +185,7 @@ describe('Booking Controller', () => {
         Booking.findByIdAndDelete as jest.Mock
       ).mockResolvedValue({});
 
-      await bookingController.deleteBooking(req, res, next);
+      await deleteBooking(req, res, next);
 
       expect(
         Booking.findByIdAndDelete,
@@ -197,7 +201,7 @@ describe('Booking Controller', () => {
         Booking.findByIdAndDelete as jest.Mock
       ).mockResolvedValue(null);
 
-      await bookingController.deleteBooking(req, res, next);
+      await deleteBooking(req, res, next);
 
       expect(sendError).toHaveBeenCalledWith(
         res,

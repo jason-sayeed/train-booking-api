@@ -9,6 +9,8 @@ import Train, {
   type ITrain,
 } from '../../../src/models/trainModel';
 import '../../mongodb_helper';
+import TestAgent from 'supertest/lib/agent';
+import { hashPassword } from '../../../src/utils/hashPassword';
 
 describe('Booking Routes', () => {
   const userData = {
@@ -29,14 +31,29 @@ describe('Booking Routes', () => {
 
   let user: IUser;
   let train: ITrain;
+  let agent: TestAgent;
 
   beforeEach(async (): Promise<void> => {
     await User.deleteMany();
     await Train.deleteMany();
     await Booking.deleteMany();
 
-    user = await User.create(userData);
+    const hashedPassword: string = await hashPassword(
+      userData.password,
+    );
+
+    user = await User.create({
+      ...userData,
+      password: hashedPassword,
+    });
     train = await Train.create(trainData);
+
+    agent = request.agent(app);
+
+    await agent.post('/auth/login').send({
+      email: userData.email,
+      password: userData.password,
+    });
   });
 
   describe('POST /bookings', () => {
@@ -48,7 +65,7 @@ describe('Booking Routes', () => {
         bookingDate: new Date(),
       };
 
-      const res = await request(app)
+      const res = await agent
         .post('/bookings')
         .send(bookingData);
 
@@ -60,26 +77,27 @@ describe('Booking Routes', () => {
     });
 
     it('should return 400 if required fields are missing', async (): Promise<void> => {
-      const res = await request(app)
+      const res = await agent
         .post('/bookings')
         .send({ user: user._id, train: train._id });
 
       expect(res.status).toBe(400);
       expect(res.body.error).toBe(
-        'User, train, seatsBooked and bookingDate are required',
+        'seatsBooked is required',
       );
     });
 
     it('should return 400 for invalid booking date', async () => {
-      const res = await request(app)
-        .post('/bookings')
-        .send({
-          user: user._id,
-          train: train._id,
-          seatsBooked: 2,
-          bookingDate: 'invalid-date',
-        });
+      const res = await agent.post('/bookings').send({
+        user: user._id,
+        train: train._id,
+        seatsBooked: 2,
+        bookingDate: 'invalid-date',
+      });
       expect(res.status).toBe(400);
+      expect(res.body.error).toMatch(
+        /validation failed: bookingDate/,
+      );
     });
   });
 
@@ -94,7 +112,7 @@ describe('Booking Routes', () => {
 
       const booking = await Booking.create(bookingData);
 
-      const res = await request(app).get(
+      const res = await agent.get(
         `/bookings/${booking._id}`,
       );
 
@@ -109,7 +127,7 @@ describe('Booking Routes', () => {
       const invalidBookingId =
         new mongoose.Types.ObjectId();
 
-      const res = await request(app).delete(
+      const res = await agent.delete(
         `/bookings/${invalidBookingId}`,
       );
 
@@ -129,7 +147,7 @@ describe('Booking Routes', () => {
 
       const booking = await Booking.create(bookingData);
 
-      const res = await request(app)
+      const res = await agent
         .put(`/bookings/${booking._id}`)
         .send({ seatsBooked: 3 });
 
@@ -141,7 +159,7 @@ describe('Booking Routes', () => {
       const invalidBookingId =
         new mongoose.Types.ObjectId();
 
-      const res = await request(app).delete(
+      const res = await agent.delete(
         `/bookings/${invalidBookingId}`,
       );
 
@@ -161,7 +179,7 @@ describe('Booking Routes', () => {
 
       const booking = await Booking.create(bookingData);
 
-      const res = await request(app).delete(
+      const res = await agent.delete(
         `/bookings/${booking._id}`,
       );
 
@@ -175,7 +193,7 @@ describe('Booking Routes', () => {
       const invalidBookingId =
         new mongoose.Types.ObjectId();
 
-      const res = await request(app).delete(
+      const res = await agent.delete(
         `/bookings/${invalidBookingId}`,
       );
 

@@ -28,6 +28,7 @@ router.get('/login', (_req: Request, res: Response) => {
 
 router.get(
   '/logout',
+  ensureAuthenticated,
   (req: Request, res: Response, next: NextFunction) => {
     req.logout((err: Error) => {
       if (err) {

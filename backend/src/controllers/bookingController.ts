@@ -5,31 +5,40 @@ import {
   sendError,
   sendSuccess,
 } from '../utils/responseHelper';
+import { IUser } from '../models/userModel';
 
 export const createBooking: RequestHandler = async (
   req,
   res,
 ): Promise<void> => {
   try {
-    const { user, train, seatsBooked, bookingDate } =
-      req.body;
-
-    if (!user || !train || !seatsBooked || !bookingDate) {
-      return sendError(
-        res,
-        'User, train, seatsBooked and bookingDate are required',
-        400,
-      );
+    if (!req.user) {
+      return sendError(res, 'User not authenticated', 401);
     }
 
-    const booking = new Booking({
-      user,
+    const user = req.user as IUser;
+    const { train, seatsBooked, bookingDate } = req.body;
+
+    if (!train) {
+      return sendError(res, 'train is required', 400);
+    }
+
+    if (!seatsBooked) {
+      return sendError(res, 'seatsBooked is required', 400);
+    }
+
+    if (!bookingDate) {
+      return sendError(res, 'bookingDate is required', 400);
+    }
+
+    const savedBooking = await Booking.create({
+      user: user._id,
       train,
       seatsBooked,
       bookingDate,
     });
 
-    const savedBooking = await booking.save();
+    console.log(savedBooking);
     return sendSuccess(res, savedBooking, 201);
   } catch (error: unknown) {
     return handleError(res, error);
