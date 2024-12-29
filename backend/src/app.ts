@@ -16,7 +16,9 @@ import cors from 'cors';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import hpp from 'hpp';
-import rateLimit from 'express-rate-limit';
+import rateLimit, {
+  RateLimitRequestHandler,
+} from 'express-rate-limit';
 import morgan from 'morgan';
 
 dotenv.config();
@@ -29,7 +31,7 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('combined'));
 }
 
-const limiter = rateLimit({
+const limiter: RateLimitRequestHandler = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
 });
@@ -43,7 +45,7 @@ app.use(limiter);
 
 app.use(
   (_req: Request, res: Response, next: NextFunction) => {
-    res.setTimeout(30000, () => {
+    res.setTimeout(30000, (): void => {
       res.status(408).json({ error: 'Request Timeout' });
     });
     next();
@@ -85,7 +87,7 @@ app.use('/auth', authRoutes);
 app.use('/trains', trainRoutes);
 app.use('/bookings', bookingRoutes);
 
-app.use((_req: Request, res: Response) => {
+app.use((_req: Request, res: Response): void => {
   res.status(404).json({ error: 'Not Found' });
 });
 
@@ -99,7 +101,7 @@ app.use(
     _req: Request,
     res: Response,
     _next: NextFunction,
-  ) => {
+  ): void => {
     const status: number = err.status || 500;
     console.error('Error:', err.message);
     const message: string =

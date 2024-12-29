@@ -29,4 +29,18 @@ describe('hashPassword', () => {
 
     expect(result).toBe(mockHashedPassword);
   });
+
+  it('should throw an error if bcrypt.hash fails', async () => {
+    const mockError = new Error('Bcrypt error');
+
+    (bcrypt.hash as jest.Mock).mockRejectedValue(mockError);
+
+    await expect(
+      hashPassword(mockPassword),
+    ).rejects.toThrow('Failed to hash password');
+    expect(bcrypt.hash).toHaveBeenCalledWith(
+      mockPassword,
+      10,
+    );
+  });
 });

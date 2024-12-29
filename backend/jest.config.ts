@@ -27,7 +27,7 @@ export default {
     'node',
   ],
 
-  collectCoverage: false,
+  collectCoverage: true,
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',
     '!src/**/*.d.ts',

@@ -52,4 +52,36 @@ describe('connectToDatabase', () => {
       'mongodb://localhost:0000/testdb',
     );
   });
+
+  it('should throw an error if connection fails with an Error instance', async (): Promise<void> => {
+    process.env.MONGODB_URL =
+      'mongodb://localhost:0000/testdb';
+    const mockError = new Error('Connection failed');
+
+    (mongoose.connect as jest.Mock).mockRejectedValue(
+      mockError,
+    );
+
+    await expect(connectToDatabase()).rejects.toThrow(
+      'MongoDB connection error: Connection failed',
+    );
+
+    expect(mongoose.connect).toHaveBeenCalledWith(
+      'mongodb://localhost:0000/testdb',
+    );
+  });
+
+  it('should throw a MongoDB connection error when connection fails with a non-Error value', async (): Promise<void> => {
+    process.env.MONGODB_URL =
+      'mongodb://localhost:0000/testdb';
+    const mockError = 'Non-error string';
+
+    (mongoose.connect as jest.Mock).mockRejectedValue(
+      mockError,
+    );
+
+    await expect(connectToDatabase()).rejects.toThrow(
+      'MongoDB connection error: Non-error string',
+    );
+  });
 });

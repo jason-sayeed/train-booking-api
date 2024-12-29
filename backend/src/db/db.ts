@@ -2,7 +2,8 @@ import mongoose from 'mongoose';
 
 export const connectToDatabase =
   async (): Promise<void> => {
-    const dbUrl: string = process.env.MONGODB_URL;
+    const dbUrl: string | undefined =
+      process.env.MONGODB_URL;
 
     if (!dbUrl) {
       throw new Error(
