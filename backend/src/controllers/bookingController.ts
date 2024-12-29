@@ -33,9 +33,7 @@ export const createBooking: RequestHandler = async (
 
     const savedBooking = await Booking.create({
       user: user._id,
-      train,
-      seatsBooked,
-      bookingDate,
+      ...req.body,
     });
 
     return sendSuccess(res, savedBooking, 201);
