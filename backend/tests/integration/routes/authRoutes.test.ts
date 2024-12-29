@@ -75,6 +75,12 @@ describe('Auth Routes', () => {
       expect(res.status).toBe(302);
       expect(res.headers.location).toBe('/auth/login');
     });
+
+    it('should redirect to login if user tries to logout without logging in', async (): Promise<void> => {
+      const res = await agent.get('/auth/logout');
+      expect(res.status).toBe(302);
+      expect(res.headers.location).toBe('/auth/login');
+    });
   });
 
   describe('GET /auth/profile', () => {

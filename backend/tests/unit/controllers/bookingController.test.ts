@@ -33,7 +33,7 @@ beforeEach(() => {
 
 describe('Booking Controller', () => {
   describe('createBooking', () => {
-    it('should return an error if required fields are missing', async () => {
+    it('should return an error if required fields are missing', async (): Promise<void> => {
       req.user = { _id: 'mockUserId' };
       req.body = {
         train: 'trainId',
@@ -49,7 +49,7 @@ describe('Booking Controller', () => {
       );
     });
 
-    it('should create and return a booking if all fields are valid', async () => {
+    it('should create and return a booking if all fields are valid', async (): Promise<void> => {
       req.user = { _id: 'mockUserId' };
       req.body = {
         train: 'trainId',
@@ -80,10 +80,43 @@ describe('Booking Controller', () => {
         201,
       );
     });
+
+    it('should return an error if train is not provided', async (): Promise<void> => {
+      req.user = { _id: 'mockUserId' };
+      req.body = {
+        seatsBooked: 2,
+        bookingDate: '2024-12-29T12:00:00.000Z',
+      };
+
+      await createBooking(req, res, next);
+
+      expect(sendError).toHaveBeenCalledWith(
+        res,
+        'train is required',
+        400,
+      );
+    });
+
+    it('should return an error if user is not authenticated', async (): Promise<void> => {
+      req.user = undefined;
+      req.body = {
+        train: 'trainId',
+        seatsBooked: 2,
+        bookingDate: '2024-12-29T12:00:00.000Z',
+      };
+
+      await createBooking(req, res, next);
+
+      expect(sendError).toHaveBeenCalledWith(
+        res,
+        'User not authenticated',
+        401,
+      );
+    });
   });
 
   describe('getBookingById', () => {
-    it('should return a booking by ID', async () => {
+    it('should return a booking by ID', async (): Promise<void> => {
       req.params.id = 'bookingId123';
       const mockBooking = {
         _id: 'bookingId123',
@@ -108,7 +141,7 @@ describe('Booking Controller', () => {
       );
     });
 
-    it('should return an error if booking not found', async () => {
+    it('should return an error if booking not found', async (): Promise<void> => {
       req.params.id = 'bookingId123';
       (Booking.findById as jest.Mock).mockResolvedValue(
         null,
@@ -125,7 +158,7 @@ describe('Booking Controller', () => {
   });
 
   describe('updateBooking', () => {
-    it('should return an error if seatsBooked is less than 1', async () => {
+    it('should return an error if seatsBooked is less than 1', async (): Promise<void> => {
       req.params.id = 'bookingId123';
       req.body = {
         seatsBooked: 0,
@@ -141,7 +174,7 @@ describe('Booking Controller', () => {
       );
     });
 
-    it('should update a booking successfully', async () => {
+    it('should update a booking successfully', async (): Promise<void> => {
       req.params.id = 'bookingId123';
       req.body = {
         seatsBooked: 3,
@@ -179,7 +212,7 @@ describe('Booking Controller', () => {
   });
 
   describe('deleteBooking', () => {
-    it('should delete a booking by ID', async () => {
+    it('should delete a booking by ID', async (): Promise<void> => {
       req.params.id = 'bookingId123';
       (
         Booking.findByIdAndDelete as jest.Mock
@@ -195,7 +228,7 @@ describe('Booking Controller', () => {
       });
     });
 
-    it('should return an error if booking not found', async () => {
+    it('should return an error if booking not found', async (): Promise<void> => {
       req.params.id = 'bookingId123';
       (
         Booking.findByIdAndDelete as jest.Mock

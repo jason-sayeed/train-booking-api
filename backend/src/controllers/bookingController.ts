@@ -38,7 +38,6 @@ export const createBooking: RequestHandler = async (
       bookingDate,
     });
 
-    console.log(savedBooking);
     return sendSuccess(res, savedBooking, 201);
   } catch (error: unknown) {
     return handleError(res, error);
