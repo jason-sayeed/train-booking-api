@@ -11,6 +11,7 @@ export default [
       'node_modules/',
       'coverage/',
       '.env',
+      '.env.test',
     ],
   },
   {

@@ -1,4 +1,4 @@
-import * as dotenv from 'dotenv';
+import dotenv from 'dotenv';
 
 const envFile: '.env.test' | '.env' =
   process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
