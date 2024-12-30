@@ -1,6 +1,6 @@
 import Route, {
   IRoute,
-} from '../../../src/models/routesModel';
+} from '../../../src/models/routeModel';
 import '../../mongodb_helper';
 import { DeleteResult } from 'mongodb';
 

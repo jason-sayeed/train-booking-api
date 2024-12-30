@@ -16,7 +16,7 @@ passport.use(
       ) => void,
     ): Promise<void> => {
       try {
-        const user = await User.findOne({
+        const user: IUser | null = await User.findOne({
           email,
         });
 
@@ -52,7 +52,7 @@ passport.serializeUser(
   (
     user: Partial<IUser>,
     done: (err: Error | null, id?: string) => void,
-  ) => {
+  ): void => {
     if (!user._id) {
       throw new Error('User id is not found');
     }
@@ -66,7 +66,7 @@ passport.deserializeUser(
     done: (err: Error | null, user?: IUser | false) => void,
   ): Promise<void> => {
     try {
-      const user = await User.findById(id);
+      const user: IUser | null = await User.findById(id);
       if (!user) {
         return done(null, false);
       }

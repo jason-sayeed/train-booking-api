@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { searchTrains } from '../../../src/controllers/trainController';
 import Train from '../../../src/models/trainModel';
-import Route from '../../../src/models/routesModel';
+import Route from '../../../src/models/routeModel';
 import {
   sendError,
   sendSuccess,
@@ -12,7 +12,7 @@ import {
 } from 'node-mocks-http';
 
 jest.mock('../../../src/models/trainModel');
-jest.mock('../../../src/models/routesModel');
+jest.mock('../../../src/models/routeModel');
 jest.mock('../../../src/utils/responseHelper');
 
 let req: Request;

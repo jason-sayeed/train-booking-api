@@ -44,7 +44,11 @@ app.use(hpp());
 app.use(limiter);
 
 app.use(
-  (_req: Request, res: Response, next: NextFunction) => {
+  (
+    _req: Request,
+    res: Response,
+    next: NextFunction,
+  ): void => {
     res.setTimeout(30000, (): void => {
       res.status(408).json({ error: 'Request Timeout' });
     });

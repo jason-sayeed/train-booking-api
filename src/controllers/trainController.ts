@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import Train, { ITrain } from '../models/trainModel';
-import Route, { IRoute } from '../models/routesModel';
+import Route, { IRoute } from '../models/routeModel';
 import {
   sendError,
   sendSuccess,
