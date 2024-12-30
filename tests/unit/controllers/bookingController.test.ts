@@ -23,7 +23,7 @@ let req: Request;
 let res: Response;
 let next: jest.Mock;
 
-beforeEach(() => {
+beforeEach((): void => {
   req = createRequest();
   res = createResponse();
   next = jest.fn();
@@ -31,8 +31,16 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('Booking Controller', () => {
-  describe('createBooking', () => {
+type MockBookingType = {
+  _id: string;
+  userId: string;
+  trainId: string;
+  seatsBooked: number;
+  bookingDate: Date;
+};
+
+describe('Booking Controller', (): void => {
+  describe('createBooking', (): void => {
     it('should return an error if required fields are missing', async (): Promise<void> => {
       req.user = { _id: 'mockUserId' };
       req.body = {
@@ -115,10 +123,10 @@ describe('Booking Controller', () => {
     });
   });
 
-  describe('getBookingById', () => {
+  describe('getBookingById', (): void => {
     it('should return a booking by ID', async (): Promise<void> => {
       req.params.id = 'bookingId123';
-      const mockBooking = {
+      const mockBooking: MockBookingType = {
         _id: 'bookingId123',
         userId: 'userId',
         trainId: 'trainId',
@@ -157,7 +165,7 @@ describe('Booking Controller', () => {
     });
   });
 
-  describe('updateBooking', () => {
+  describe('updateBooking', (): void => {
     it('should return an error if seatsBooked is less than 1', async (): Promise<void> => {
       req.params.id = 'bookingId123';
       req.body = {
@@ -181,7 +189,7 @@ describe('Booking Controller', () => {
         bookingDate: new Date(),
       };
 
-      const mockUpdatedBooking = {
+      const mockUpdatedBooking: MockBookingType = {
         _id: 'bookingId123',
         userId: 'userId',
         trainId: 'trainId',
@@ -211,7 +219,7 @@ describe('Booking Controller', () => {
     });
   });
 
-  describe('deleteBooking', () => {
+  describe('deleteBooking', (): void => {
     it('should delete a booking by ID', async (): Promise<void> => {
       req.params.id = 'bookingId123';
       (

@@ -19,7 +19,7 @@ let req: Request;
 let res: Response;
 let next: jest.Mock;
 
-beforeEach(() => {
+beforeEach((): void => {
   req = createRequest();
   res = createResponse();
   next = jest.fn();
@@ -27,8 +27,30 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('Train Controller', () => {
-  describe('searchTrains', () => {
+type MockRouteType = {
+  _id: string;
+  startStation: string;
+  endStation: string;
+};
+
+type MockTrainData = {
+  _id: string;
+  route: string;
+  departureTime: Date;
+  arrivalTime: Date;
+  operatingDate: Date;
+  availableSeats: number;
+};
+
+type MockTrainDataResponse = {
+  trainId: string;
+  departureTime: Date;
+  arrivalTime: Date;
+  availableSeats: number;
+};
+
+describe('Train Controller', (): void => {
+  describe('searchTrains', (): void => {
     it('should return an error if no trains are found for the specified route, date and seat count', async (): Promise<void> => {
       req.query = {
         startStation: 'Station A',
@@ -61,13 +83,13 @@ describe('Train Controller', () => {
         numberOfSeatsRequested: '5',
       };
 
-      const mockRoute = {
+      const mockRoute: MockRouteType = {
         _id: 'route1',
         startStation: 'Station A',
         endStation: 'Station B',
       };
 
-      const mockTrains = [
+      const mockTrains: MockTrainData[] = [
         {
           _id: 'train1',
           route: mockRoute._id,
@@ -97,12 +119,16 @@ describe('Train Controller', () => {
 
       expect(sendSuccess).toHaveBeenCalledWith(
         res,
-        mockTrains.map((train) => ({
-          trainId: train._id.toString(),
-          departureTime: train.departureTime,
-          arrivalTime: train.arrivalTime,
-          availableSeats: train.availableSeats,
-        })),
+        mockTrains.map(
+          (
+            train: MockTrainData,
+          ): MockTrainDataResponse => ({
+            trainId: train._id.toString(),
+            departureTime: train.departureTime,
+            arrivalTime: train.arrivalTime,
+            availableSeats: train.availableSeats,
+          }),
+        ),
       );
     });
 
@@ -133,7 +159,7 @@ describe('Train Controller', () => {
         numberOfSeatsRequested: '50',
       };
 
-      const mockRoute = {
+      const mockRoute: MockRouteType = {
         _id: 'route1',
         startStation: 'Station A',
         endStation: 'Station B',

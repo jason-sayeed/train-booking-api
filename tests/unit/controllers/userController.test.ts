@@ -24,7 +24,7 @@ let req: Request;
 let res: Response;
 let next: jest.Mock;
 
-beforeEach(() => {
+beforeEach((): void => {
   req = createRequest();
   res = createResponse();
   next = jest.fn();
@@ -32,16 +32,26 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe('User Controller', () => {
-  describe('createUser', () => {
-    it('should hash the password and create a user', async () => {
+type MockUserType = {
+  _id: string;
+  name: string;
+  email: string;
+  password: string;
+};
+
+describe('User Controller', (): void => {
+  describe('createUser', (): void => {
+    it('should hash the password and create a user', async (): Promise<void> => {
       req.body = {
         name: 'John Doe',
         email: 'test@example.com',
         password: 'password123',
       };
 
-      const mockUser = { _id: 'userId123', ...req.body };
+      const mockUser: MockUserType = {
+        _id: 'userId123',
+        ...req.body,
+      };
 
       (hashPassword as jest.Mock).mockResolvedValue(
         'hashedPassword',
@@ -67,7 +77,7 @@ describe('User Controller', () => {
       );
     });
 
-    it('should handle duplicate email error', async () => {
+    it('should handle duplicate email error', async (): Promise<void> => {
       req.body = {
         name: 'John Doe',
         email: 'test@example.com',
@@ -94,10 +104,10 @@ describe('User Controller', () => {
     });
   });
 
-  describe('getUser', () => {
-    it('should return a user by ID', async () => {
+  describe('getUser', (): void => {
+    it('should return a user by ID', async (): Promise<void> => {
       req.params.id = 'userId123';
-      const mockUser = {
+      const mockUser: { id: string; name: string } = {
         id: 'userId123',
         name: 'John Doe',
       };
@@ -117,7 +127,7 @@ describe('User Controller', () => {
       );
     });
 
-    it('should return an error if user is not found', async () => {
+    it('should return an error if user is not found', async (): Promise<void> => {
       req.params.id = 'userId123';
       (User.findById as jest.Mock).mockResolvedValue(null);
 
@@ -131,8 +141,8 @@ describe('User Controller', () => {
     });
   });
 
-  describe('updateUser', () => {
-    it('should hash the password if provided', async () => {
+  describe('updateUser', (): void => {
+    it('should hash the password if provided', async (): Promise<void> => {
       req.params.id = 'userId123';
       req.body = { password: 'new-password' };
       (hashPassword as jest.Mock).mockResolvedValue(
@@ -155,7 +165,7 @@ describe('User Controller', () => {
       expect(sendSuccess).toHaveBeenCalled();
     });
 
-    it('should return an error if user is not found', async () => {
+    it('should return an error if user is not found', async (): Promise<void> => {
       req.params.id = 'userId123';
       (
         User.findByIdAndUpdate as jest.Mock
@@ -171,8 +181,8 @@ describe('User Controller', () => {
     });
   });
 
-  describe('deleteUser', () => {
-    it('should delete a user by ID', async () => {
+  describe('deleteUser', (): void => {
+    it('should delete a user by ID', async (): Promise<void> => {
       req.params.id = 'userId123';
       (
         User.findByIdAndDelete as jest.Mock
@@ -188,7 +198,7 @@ describe('User Controller', () => {
       });
     });
 
-    it('should return an error if user is not found', async () => {
+    it('should return an error if user is not found', async (): Promise<void> => {
       req.params.id = 'userId123';
       (
         User.findByIdAndDelete as jest.Mock

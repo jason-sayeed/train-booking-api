@@ -5,15 +5,15 @@ jest.mock('mongoose', () => ({
   connect: jest.fn(),
 }));
 
-describe('connectToDatabase', () => {
+describe('connectToDatabase', (): void => {
   const originalEnv: NodeJS.ProcessEnv = process.env;
 
-  beforeEach(() => {
+  beforeEach((): void => {
     jest.clearAllMocks();
     process.env = { ...originalEnv };
   });
 
-  afterEach(() => {
+  afterEach((): void => {
     process.env = originalEnv;
   });
 
@@ -56,7 +56,7 @@ describe('connectToDatabase', () => {
   it('should throw an error if connection fails with an Error instance', async (): Promise<void> => {
     process.env.MONGODB_URL =
       'mongodb://localhost:0000/testdb';
-    const mockError = new Error('Connection failed');
+    const mockError: Error = new Error('Connection failed');
 
     (mongoose.connect as jest.Mock).mockRejectedValue(
       mockError,
@@ -74,7 +74,7 @@ describe('connectToDatabase', () => {
   it('should throw a MongoDB connection error when connection fails with a non-Error value', async (): Promise<void> => {
     process.env.MONGODB_URL =
       'mongodb://localhost:0000/testdb';
-    const mockError = 'Non-error string';
+    const mockError: string = 'Non-error string';
 
     (mongoose.connect as jest.Mock).mockRejectedValue(
       mockError,
