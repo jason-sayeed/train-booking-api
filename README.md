@@ -128,7 +128,7 @@ npm run build
 npm start
 ```
 
-The server will be accessible at ```http://localhost:<PORT>``` (default: `3000`).
+The server will be accessible at ```http://localhost:<PORT>``` (default: ```3000```).
 
 ### 6. Linting
 
