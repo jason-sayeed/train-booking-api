@@ -1,8 +1,11 @@
 import mongoose from 'mongoose';
-import Booking from '../../../src/models/bookingModel';
+import Booking, {
+  IBooking,
+} from '../../../src/models/bookingModel';
 import '../../mongodb_helper';
+import { DeleteResult } from 'mongodb';
 
-describe('Booking Model', () => {
+describe('Booking Model', (): void => {
   beforeEach(async (): Promise<void> => {
     await Booking.deleteMany({});
   });
@@ -18,7 +21,7 @@ describe('Booking Model', () => {
       bookingDate: new Date(),
     });
 
-    const savedBooking = await booking.save();
+    const savedBooking: IBooking = await booking.save();
 
     expect(savedBooking._id).toBeDefined();
     expect(savedBooking.userId).toBe(userId);
@@ -98,7 +101,7 @@ describe('Booking Model', () => {
     });
     await booking.save();
 
-    const foundBookings = await Booking.find({
+    const foundBookings: IBooking[] = await Booking.find({
       userId: userId,
     });
     expect(foundBookings.length).toBe(1);
@@ -117,9 +120,9 @@ describe('Booking Model', () => {
       seatsBooked: 2,
       bookingDate: new Date(),
     });
-    const savedBooking = await booking.save();
+    const savedBooking: IBooking = await booking.save();
 
-    const result = await Booking.deleteOne({
+    const result: DeleteResult = await Booking.deleteOne({
       _id: savedBooking._id,
     });
     expect(result.deletedCount).toBe(1);
@@ -135,16 +138,15 @@ describe('Booking Model', () => {
       seatsBooked: 2,
       bookingDate: new Date(),
     });
-    const savedBooking = await booking.save();
+    const savedBooking: IBooking = await booking.save();
 
     await Booking.updateOne(
       { _id: savedBooking._id },
       { seatsBooked: 3 },
     );
 
-    const updatedBooking = await Booking.findById(
-      savedBooking._id,
-    );
+    const updatedBooking: IBooking | null =
+      await Booking.findById(savedBooking._id);
     expect(updatedBooking?.seatsBooked).toBe(3);
   });
 });

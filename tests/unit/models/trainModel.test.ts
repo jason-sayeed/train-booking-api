@@ -1,8 +1,10 @@
 import mongoose from 'mongoose';
-import Train from '../../../src/models/trainModel';
+import Train, {
+  ITrain,
+} from '../../../src/models/trainModel';
 import '../../mongodb_helper';
 
-describe('Train Model', () => {
+describe('Train Model', (): void => {
   beforeEach(async (): Promise<void> => {
     await Train.deleteMany({});
   });
@@ -20,7 +22,7 @@ describe('Train Model', () => {
       seatsBooked: 0,
     });
 
-    const savedTrain = await train.save();
+    const savedTrain: ITrain = await train.save();
 
     expect(savedTrain._id).toBeDefined();
     expect(savedTrain.name).toBe('Express Train');
@@ -57,7 +59,7 @@ describe('Train Model', () => {
       seatsBooked: 0,
     });
 
-    const savedTrain = await train.save();
+    const savedTrain: ITrain = await train.save();
     expect(savedTrain.name).toBe('Express Train');
   });
 
@@ -157,15 +159,14 @@ describe('Train Model', () => {
       seatsBooked: 0,
     });
 
-    const savedTrain = await train.save();
+    const savedTrain: ITrain = await train.save();
 
     savedTrain.seatsBooked += 30;
     savedTrain.availableSeats -= 30;
     await savedTrain.save();
 
-    const updatedTrain = await Train.findById(
-      savedTrain._id,
-    );
+    const updatedTrain: ITrain | null =
+      await Train.findById(savedTrain._id);
     expect(updatedTrain).not.toBeNull();
     expect(updatedTrain!.seatsBooked).toBe(30);
     expect(updatedTrain!.availableSeats).toBe(70);

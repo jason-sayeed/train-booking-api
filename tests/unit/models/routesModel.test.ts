@@ -1,7 +1,10 @@
-import Route from '../../../src/models/routesModel';
+import Route, {
+  IRoute,
+} from '../../../src/models/routesModel';
 import '../../mongodb_helper';
+import { DeleteResult } from 'mongodb';
 
-describe('Route Model', () => {
+describe('Route Model', (): void => {
   beforeEach(async (): Promise<void> => {
     await Route.deleteMany();
   });
@@ -12,7 +15,7 @@ describe('Route Model', () => {
       endStation: 'Station B',
     });
 
-    const savedRoute = await route.save();
+    const savedRoute: IRoute = await route.save();
 
     expect(savedRoute._id).toBeDefined();
     expect(savedRoute.startStation).toBe('Station A');
@@ -45,16 +48,15 @@ describe('Route Model', () => {
       endStation: 'Station B',
     });
 
-    const savedRoute = await route.save();
+    const savedRoute: IRoute = await route.save();
 
     await Route.updateOne(
       { _id: savedRoute._id },
       { endStation: 'Updated Station B' },
     );
 
-    const updatedRoute = await Route.findById(
-      savedRoute._id,
-    );
+    const updatedRoute: IRoute | null =
+      await Route.findById(savedRoute._id);
     expect(updatedRoute?.endStation).toBe(
       'Updated Station B',
     );
@@ -66,9 +68,9 @@ describe('Route Model', () => {
       endStation: 'Station B',
     });
 
-    const savedRoute = await route.save();
+    const savedRoute: IRoute = await route.save();
 
-    const result = await Route.deleteOne({
+    const result: DeleteResult = await Route.deleteOne({
       _id: savedRoute._id,
     });
     expect(result.deletedCount).toBe(1);
