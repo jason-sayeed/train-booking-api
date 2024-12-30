@@ -103,7 +103,7 @@ MONGODB_URL=<your-mongodb-connection-string>
 PORT=<your-port>
 ```
 
-Replace <your-mongodb-connection-string> and <your-session-secret> and <your-port> with appropriate values.
+Replace \<your-mongodb-connection-string> and \<your-session-secret> and \<your-port> with appropriate values.
 
 ### 4. Set Up the Database
 
