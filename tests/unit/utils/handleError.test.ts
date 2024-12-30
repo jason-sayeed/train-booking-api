@@ -6,10 +6,18 @@ jest.mock('../../../src/utils/responseHelper', () => ({
   sendError: jest.fn(),
 }));
 
-describe('handleError', () => {
+type TestError =
+  | Error
+  | string
+  | number
+  | null
+  | undefined
+  | Record<string, unknown>;
+
+describe('handleError', (): void => {
   let res: Partial<Response>;
 
-  beforeEach(() => {
+  beforeEach((): void => {
     res = {
       status: jest.fn().mockReturnThis(),
       json: jest.fn().mockReturnThis(),
@@ -17,8 +25,10 @@ describe('handleError', () => {
     jest.clearAllMocks();
   });
 
-  it('should call sendError with the error message if error is an instance of Error', () => {
-    const error = new Error('Something went wrong');
+  it('should call sendError with the error message if error is an instance of Error', (): void => {
+    const error: TestError = new Error(
+      'Something went wrong',
+    );
     handleError(res as Response, error);
 
     expect(sendError).toHaveBeenCalledWith(
@@ -28,8 +38,8 @@ describe('handleError', () => {
     );
   });
 
-  it('should call sendError with "An unknown error occurred" if error is not an instance of Error', () => {
-    const error = 'Some random string';
+  it('should call sendError with "An unknown error occurred" if error is not an instance of Error', (): void => {
+    const error: TestError = 'Some random string';
     handleError(res as Response, error);
 
     expect(sendError).toHaveBeenCalledWith(
@@ -39,8 +49,8 @@ describe('handleError', () => {
     );
   });
 
-  it('should call sendError with "An unknown error occurred" if error is null', () => {
-    const error = null;
+  it('should call sendError with "An unknown error occurred" if error is null', (): void => {
+    const error: TestError = null;
     handleError(res as Response, error);
 
     expect(sendError).toHaveBeenCalledWith(
@@ -50,8 +60,8 @@ describe('handleError', () => {
     );
   });
 
-  it('should call sendError with "An unknown error occurred" if error is undefined', () => {
-    const error = undefined;
+  it('should call sendError with "An unknown error occurred" if error is undefined', (): void => {
+    const error: TestError = undefined;
     handleError(res as Response, error);
 
     expect(sendError).toHaveBeenCalledWith(
@@ -61,8 +71,8 @@ describe('handleError', () => {
     );
   });
 
-  it('should call sendError with "An unknown error occurred" if error is a number', () => {
-    const error = 42;
+  it('should call sendError with "An unknown error occurred" if error is a number', (): void => {
+    const error: TestError = 42;
     handleError(res as Response, error);
 
     expect(sendError).toHaveBeenCalledWith(
@@ -72,8 +82,10 @@ describe('handleError', () => {
     );
   });
 
-  it('should call sendError with "An unknown error occurred" if error is an object that is not an instance of Error', () => {
-    const error = { message: 'Not an Error instance' };
+  it('should call sendError with "An unknown error occurred" if error is an object that is not an instance of Error', (): void => {
+    const error: TestError = {
+      message: 'Not an Error instance',
+    };
     handleError(res as Response, error);
 
     expect(sendError).toHaveBeenCalledWith(
