@@ -1,7 +1,9 @@
 import mongoose from 'mongoose';
-import request from 'supertest';
+import request, { Response } from 'supertest';
 import { app } from '../../../src/app';
-import Booking from '../../../src/models/bookingModel';
+import Booking, {
+  IBooking,
+} from '../../../src/models/bookingModel';
 import User, {
   type IUser,
 } from '../../../src/models/userModel';
@@ -12,14 +14,30 @@ import '../../mongodb_helper';
 import TestAgent from 'supertest/lib/agent';
 import { hashPassword } from '../../../src/utils/hashPassword';
 
-describe('Booking Routes', () => {
-  const userData = {
+type UserTestData = Pick<
+  IUser,
+  'name' | 'email' | 'password'
+>;
+
+type TrainTestData = Pick<
+  ITrain,
+  | 'name'
+  | 'route'
+  | 'departureTime'
+  | 'arrivalTime'
+  | 'operatingDate'
+  | 'availableSeats'
+  | 'seatsBooked'
+>;
+
+describe('Booking Routes', (): void => {
+  const userData: UserTestData = {
     name: 'Test User',
     email: 'testuser@example.com',
     password: 'password123',
   };
 
-  const trainData = {
+  const trainData: TrainTestData = {
     name: 'Test Train',
     route: new mongoose.Types.ObjectId(),
     departureTime: new Date(),
@@ -56,18 +74,16 @@ describe('Booking Routes', () => {
     });
   });
 
-  describe('POST /bookings', () => {
-    it('should create a new booking and return 201', async (): Promise<void> => {
-      const bookingData = {
-        userId: user._id,
-        trainId: train._id,
-        seatsBooked: 2,
-        bookingDate: new Date(),
-      };
-
-      const res = await agent
+  describe('POST /bookings', (): void => {
+    it('should create a new booking and return the booking details', async (): Promise<void> => {
+      const res: Response = await agent
         .post('/bookings')
-        .send(bookingData);
+        .send({
+          userId: user._id,
+          trainId: train._id,
+          seatsBooked: 2,
+          bookingDate: new Date(),
+        });
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty('_id');
@@ -77,7 +93,7 @@ describe('Booking Routes', () => {
     });
 
     it('should return 400 if required fields are missing', async (): Promise<void> => {
-      const res = await agent
+      const res: Response = await agent
         .post('/bookings')
         .send({ user: user._id, trainId: train._id });
 
@@ -87,13 +103,15 @@ describe('Booking Routes', () => {
       );
     });
 
-    it('should return 400 for invalid booking date', async () => {
-      const res = await agent.post('/bookings').send({
-        user: user._id,
-        trainId: train._id,
-        seatsBooked: 2,
-        bookingDate: 'invalid-date',
-      });
+    it('should return 400 for invalid booking date', async (): Promise<void> => {
+      const res: Response = await agent
+        .post('/bookings')
+        .send({
+          userId: user._id,
+          trainId: train._id,
+          seatsBooked: 2,
+          bookingDate: 'invalid-date',
+        });
       expect(res.status).toBe(400);
       expect(res.body.error).toMatch(
         /validation failed: bookingDate/,
@@ -101,18 +119,19 @@ describe('Booking Routes', () => {
     });
   });
 
-  describe('GET /bookings/:id', () => {
+  describe('GET /bookings/:id', (): void => {
     it('should return a booking by ID', async (): Promise<void> => {
-      const bookingData = {
+      const bookingData: Partial<IBooking> = {
         userId: user._id,
         trainId: train._id,
         seatsBooked: 2,
         bookingDate: new Date(),
       };
 
-      const booking = await Booking.create(bookingData);
+      const booking: IBooking =
+        await Booking.create(bookingData);
 
-      const res = await agent.get(
+      const res: Response = await agent.get(
         `/bookings/${booking._id}`,
       );
 
@@ -127,7 +146,7 @@ describe('Booking Routes', () => {
       const invalidBookingId =
         new mongoose.Types.ObjectId();
 
-      const res = await agent.delete(
+      const res: Response = await agent.get(
         `/bookings/${invalidBookingId}`,
       );
 
@@ -136,18 +155,19 @@ describe('Booking Routes', () => {
     });
   });
 
-  describe('PUT /bookings/:id', () => {
+  describe('PUT /bookings/:id', (): void => {
     it('should update a booking and return the updated booking', async (): Promise<void> => {
-      const bookingData = {
+      const bookingData: Partial<IBooking> = {
         userId: user._id,
         trainId: train._id,
         seatsBooked: 2,
         bookingDate: new Date(),
       };
 
-      const booking = await Booking.create(bookingData);
+      const booking: IBooking =
+        await Booking.create(bookingData);
 
-      const res = await agent
+      const res: Response = await agent
         .put(`/bookings/${booking._id}`)
         .send({ seatsBooked: 3 });
 
@@ -159,7 +179,7 @@ describe('Booking Routes', () => {
       const invalidBookingId =
         new mongoose.Types.ObjectId();
 
-      const res = await agent.delete(
+      const res: Response = await agent.get(
         `/bookings/${invalidBookingId}`,
       );
 
@@ -168,18 +188,19 @@ describe('Booking Routes', () => {
     });
   });
 
-  describe('DELETE /bookings/:id', () => {
+  describe('DELETE /bookings/:id', (): void => {
     it('should delete a booking and return a success message', async (): Promise<void> => {
-      const bookingData = {
+      const bookingData: Partial<IBooking> = {
         userId: user._id,
         trainId: train._id,
         seatsBooked: 2,
         bookingDate: new Date(),
       };
 
-      const booking = await Booking.create(bookingData);
+      const booking: IBooking =
+        await Booking.create(bookingData);
 
-      const res = await agent.delete(
+      const res: Response = await agent.delete(
         `/bookings/${booking._id}`,
       );
 
@@ -193,7 +214,7 @@ describe('Booking Routes', () => {
       const invalidBookingId =
         new mongoose.Types.ObjectId();
 
-      const res = await agent.delete(
+      const res: Response = await agent.delete(
         `/bookings/${invalidBookingId}`,
       );
 

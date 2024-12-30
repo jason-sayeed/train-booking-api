@@ -9,21 +9,30 @@ import Route, {
 } from '../../../src/models/routesModel';
 import '../../mongodb_helper';
 
-describe('Train Routes', () => {
-  const routeData = {
+type RouteTestData = Pick<
+  IRoute,
+  'startStation' | 'endStation'
+>;
+
+type TrainTestData = Pick<
+  ITrain,
+  | 'name'
+  | 'departureTime'
+  | 'arrivalTime'
+  | 'operatingDate'
+  | 'availableSeats'
+  | 'seatsBooked'
+> & {
+  route: mongoose.Types.ObjectId | null;
+};
+
+describe('Train Routes', (): void => {
+  const routeData: RouteTestData = {
     startStation: 'Station A',
     endStation: 'Station B',
   };
 
-  const trainData: {
-    name: string;
-    route: mongoose.Types.ObjectId | null;
-    departureTime: Date;
-    arrivalTime: Date;
-    operatingDate: Date;
-    availableSeats: number;
-    seatsBooked: number;
-  } = {
+  const trainData: TrainTestData = {
     name: 'Train 1',
     route: null,
     departureTime: new Date('2024-12-23T10:00:00Z'),
@@ -47,7 +56,7 @@ describe('Train Routes', () => {
     train = await Train.create(trainData);
   });
 
-  describe('GET /trains/search', () => {
+  describe('GET /trains/search', (): void => {
     it('should return a list of trains matching the route and date', async (): Promise<void> => {
       const res: Response = await request(app)
         .get('/trains/search')
@@ -142,7 +151,7 @@ describe('Train Routes', () => {
       );
     });
 
-    it('should return 404 if no trains are available for the specified date because there are no seats available', async () => {
+    it('should return 404 if no trains are available for the specified date because there are no seats available', async (): Promise<void> => {
       train.availableSeats = 0;
       await train.save();
 
@@ -162,8 +171,8 @@ describe('Train Routes', () => {
     });
   });
 
-  describe('Search validation middleware', () => {
-    it('should return 400 if startStation is missing', async () => {
+  describe('Search validation middleware', (): void => {
+    it('should return 400 if startStation is missing', async (): Promise<void> => {
       const res: Response = await request(app)
         .get('/trains/search')
         .query({
@@ -178,7 +187,7 @@ describe('Train Routes', () => {
       );
     });
 
-    it('should return 400 if endStation is missing', async () => {
+    it('should return 400 if endStation is missing', async (): Promise<void> => {
       const res: Response = await request(app)
         .get('/trains/search')
         .query({
@@ -193,7 +202,7 @@ describe('Train Routes', () => {
       );
     });
 
-    it('should return 400 if date is invalid', async () => {
+    it('should return 400 if date is invalid', async (): Promise<void> => {
       const res: Response = await request(app)
         .get('/trains/search')
         .query({
@@ -209,7 +218,7 @@ describe('Train Routes', () => {
       );
     });
 
-    it('should return 400 if numberOfSeatsRequested is invalid', async () => {
+    it('should return 400 if numberOfSeatsRequested is invalid', async (): Promise<void> => {
       const res: Response = await request(app)
         .get('/trains/search')
         .query({
@@ -223,7 +232,7 @@ describe('Train Routes', () => {
         'numberOfSeatsRequested is required',
       );
 
-      const resInvalid = await request(app)
+      const resInvalid: Response = await request(app)
         .get('/trains/search')
         .query({
           startStation: 'Station A',
@@ -238,7 +247,7 @@ describe('Train Routes', () => {
       );
     });
 
-    it('should pass validation for valid request', async () => {
+    it('should pass validation for valid request', async (): Promise<void> => {
       const res: Response = await request(app)
         .get('/trains/search')
         .query({
