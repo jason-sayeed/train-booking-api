@@ -160,7 +160,7 @@ The project is organized as follows:
 │   ├── integration/       # Integration tests for APIs (testing multiple components together)
 │   ├── unit/              # Unit tests for individual modules and functions
 │   └── mongodb_helper.ts  # Helper for setting up and tearing down MongoDB in-memory instances for testing
-└── [config files]         # Project configuration files (e.g., package.json, tsconfig.json, .env)
+└── [project files]        # Project configuration files (e.g., package.json, tsconfig.json, .env)
 ```
 
 ---
