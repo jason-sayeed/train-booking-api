@@ -62,11 +62,23 @@ if (!process.env.SESSION_SECRET) {
   );
 }
 
-const mongoStore: MongoStore = new MongoStore({
-  mongoUrl: process.env.MONGODB_URL,
-  ttl: 2 * 24 * 60 * 60,
-  autoRemove: 'native',
-});
+let mongoStore: MongoStore;
+
+// Check if the environment is 'test', use in-memory store for testing
+if (process.env.NODE_ENV === 'test') {
+  mongoStore = new MongoStore({
+    mongoUrl: process.env.MONGODB_URL, // This should be the in-memory DB URI in test environment
+    ttl: 2 * 24 * 60 * 60,
+    autoRemove: 'native',
+  });
+} else {
+  // Use the default mongo URL for production or development
+  mongoStore = new MongoStore({
+    mongoUrl: process.env.MONGODB_URL,
+    ttl: 2 * 24 * 60 * 60,
+    autoRemove: 'native',
+  });
+}
 
 app.use(
   session({
