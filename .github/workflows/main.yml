@@ -25,9 +25,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Print MongoDB URL
-        run: echo "MONGODB_URL=$MONGODB_URL"
-
       - name: Run tests
         run: npm test
 

@@ -20,6 +20,7 @@ import rateLimit, {
   RateLimitRequestHandler,
 } from 'express-rate-limit';
 import morgan from 'morgan';
+import mongoose from 'mongoose';
 
 dotenv.config();
 
@@ -79,6 +80,15 @@ if (process.env.NODE_ENV === 'test') {
     autoRemove: 'native',
   });
 }
+
+mongoose
+  .connect(process.env.MONGODB_URL)
+  .then(() => {
+    console.log('MongoDB connected');
+  })
+  .catch((error) => {
+    console.error('MongoDB connection error:', error);
+  });
 
 app.use(
   session({
