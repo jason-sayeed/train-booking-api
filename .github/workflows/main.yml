@@ -24,11 +24,6 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Masked debug print MONGODB_URL
-        run: |
-          echo "MONGODB_URL starts with: ${MONGODB_URL:0:20}..."
-      
-
       - name: Run tests
         run: npm test
 
