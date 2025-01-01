@@ -6,6 +6,7 @@
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation Instructions](#installation-instructions)
+- [Continuous Integration](#continuous-integration)
 - [Folder Structure](#folder-structure)
 - [API Endpoints](#api-endpoints)
 - [Run Tests](#run-tests)
@@ -18,7 +19,8 @@
 
 The Train Booking API is a backend application designed to manage train bookings, including user authentication, train
 search, and booking features. This project is built with Node.js, Express, MongoDB, and Mongoose. It includes thorough
-testing to ensure reliability and is implemented using TypeScript for type safety and better developer experience.
+testing to ensure reliability, with Continuous Integration (CI) implemented to run tests and linting on every change.
+The project is implemented using TypeScript for type safety and a better developer experience.
 
 ---
 
@@ -140,6 +142,46 @@ npm run lint
 
 ---
 
+## Continuous Integration
+
+This project uses GitHub Actions for continuous integration (CI). The CI pipeline automatically runs in the following
+scenarios:
+
+- On every push to the `main` branch
+- On every pull request targeting the `main` branch
+- Manual triggers via GitHub Actions UI
+
+### CI Pipeline Features
+
+The pipeline consists of three main jobs:
+
+1. **Test**
+    - Runs the full test suite using Jest
+    - Uses environment secrets for secure testing
+    - Runs on Ubuntu latest with Node.js 20.x
+
+2. **Lint**
+    - Ensures code style consistency with ESLint
+    - Independent job from testing
+    - Runs on Ubuntu latest with Node.js 20.x
+
+3. **Build**
+    - Verifies the project builds successfully
+    - Runs TypeScript compilation
+    - Runs on Ubuntu latest with Node.js 20.x
+
+### Environment Requirements
+
+The workflow requires the following secrets to be configured in GitHub:
+
+- `SESSION_SECRET`: For session management
+- `MONGODB_URL`: MongoDB connection string
+
+To view the CI workflow status and details, visit
+the [Actions tab](https://github.com/jason-sayeed/train-booking-api/actions) in the GitHub repository.
+
+---
+
 ## Folder Structure
 
 The project is organized as follows:
@@ -195,16 +237,15 @@ The project is organized as follows:
 
 ## Run Tests
 
-The project uses jest and mongodb-memory-server for testing. Run tests with the following commands:
+The project uses Jest and mongodb-memory-server for testing, with session storage managed by a MongoDB instance hosted
+on Atlas.
 
 - Run all tests:
-
 ```
 npm test
 ```
 
 - Run tests in watch mode:
-
 ```
 npm run test:watch
 ```
