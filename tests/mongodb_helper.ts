@@ -1,6 +1,5 @@
 import mongoose from 'mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
-import { mongoStore } from '../src/app';
 
 let mongoServer: MongoMemoryServer;
 
@@ -14,5 +13,4 @@ afterAll(async (): Promise<void> => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongoServer.stop();
-  await mongoStore.close();
 });
