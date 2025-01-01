@@ -33,7 +33,7 @@ if (process.env.NODE_ENV === 'development') {
 
 const limiter: RateLimitRequestHandler = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 100,
+  limit: 100,
 });
 
 app.use(helmet());
@@ -64,7 +64,7 @@ if (!process.env.SESSION_SECRET) {
 
 const mongoStore: MongoStore = MongoStore.create({
   mongoUrl: process.env.MONGODB_URL,
-  ttl: 2 * 24 * 60 * 60,
+  ttl: 15 * 60,
   autoRemove: 'disabled',
 });
 
