@@ -16,4 +16,6 @@ afterAll(async (): Promise<void> => {
   await mongoose.connection.dropDatabase();
   await mongoose.connection.close();
   await mongoServer.stop();
+  mongoStore.clear();
+  await mongoStore.close();
 });

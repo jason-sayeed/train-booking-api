@@ -65,7 +65,7 @@ if (!process.env.SESSION_SECRET) {
 const mongoStore: MongoStore = MongoStore.create({
   mongoUrl: process.env.MONGODB_URL,
   ttl: 2 * 24 * 60 * 60,
-  autoRemove: 'native',
+  autoRemove: 'disabled',
 });
 
 app.use(

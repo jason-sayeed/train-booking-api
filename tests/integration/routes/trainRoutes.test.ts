@@ -46,8 +46,8 @@ describe('Train Routes', (): void => {
   let train: ITrain;
 
   beforeEach(async (): Promise<void> => {
-    await Train.deleteMany({});
-    await Route.deleteMany({});
+    await Train.deleteMany();
+    await Route.deleteMany();
 
     route = await Route.create(routeData);
 
@@ -134,8 +134,6 @@ describe('Train Routes', (): void => {
     });
 
     it('should return 404 if no trains are available on the specified date', async (): Promise<void> => {
-      await train.save();
-
       const res: Response = await request(app)
         .get('/trains/search')
         .query({
