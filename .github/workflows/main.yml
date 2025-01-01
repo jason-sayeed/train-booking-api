@@ -9,8 +9,6 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
     env:
-      MONGODB_URL: ${{ secrets.MONGODB_URL }}
-      NODE_ENV: ${{ secrets.NODE_ENV }}
       SESSION_SECRET: ${{ secrets.SESSION_SECRET }}
       MONGODB_URL: ${{ secrets.MONGODB_URL }}
 
@@ -25,6 +23,11 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+
+      - name: Masked debug print MONGODB_URL
+        run: |
+          echo "MONGODB_URL starts with: ${MONGODB_URL:0:20}..."
+      
 
       - name: Run tests
         run: npm test
