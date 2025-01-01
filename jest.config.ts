@@ -1,3 +1,10 @@
+import dotenv from 'dotenv';
+
+const envFile: '.env.test' | '.env' =
+  process.env.NODE_ENV === 'test' ? '.env.test' : '.env';
+
+dotenv.config({ path: envFile });
+
 export default {
   preset: 'ts-jest',
   testEnvironment: 'node',
